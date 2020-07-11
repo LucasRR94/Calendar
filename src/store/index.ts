@@ -3,16 +3,19 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+export const store = new Vuex.Store({
   state: {
+    objDragged:{}
   },
   mutations: {
+    setobjDragged (state , obj) {
+      state.objDragged = obj;
+      console.log(`Here:${state.objDragged}`);
+    }
   },
   actions: {
   },
   getters:{
-
-  },
-  modules: {
+    getobjDragged:(state) => { return state.objDragged;}
   }
 })

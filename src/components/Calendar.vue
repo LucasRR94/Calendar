@@ -345,7 +345,6 @@ export default {
         height:40px;
         &-input-area{
           height:auto;
-          display:flex;
           input{
             max-width: 80px;
             padding:.1rem;
@@ -448,7 +447,8 @@ export default {
           height:auto;
           display:flex;
           input{
-            max-width: 80px;
+            min-width:50px;
+            max-width: 150px;
             padding:.1rem;
             font-size:1.6rem;
           }

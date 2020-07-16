@@ -12,6 +12,7 @@ import {store} from '../store';
 
 export default {
   name:"ListEvents",
+  props:['idListEvents'],
   data(){
     return{
       numbEvents: {
@@ -19,41 +20,25 @@ export default {
         maxNumber:5
       }
     }
-  },/*idTodoItem: uuidv4()*/
-  methods:{
-    lessThanTheLimit(){
-      if(this.numbEvents.actualNumber < this.numbEvents.maxNumber){
-        return true;
-      }
-      else{
-        return false;
-      }
-    },
-    insertedOneEvent(){
-      if(this.lessThanTheLimit){
-        this.numbEvents.actualNumber++;
-      }
-    },
-    delOneEvent(){
-      if(this.numbEvents.actualNumber > 0){
-        this.numbEvents.actualNumber--;
-      }
+  },
+  methods: {
+    countDivs(){ // if true show just on list mode
+      const numbChilds =  this.$refs.containerEvents.childNodes.length;
+      return  numbChilds < 5 ?  true :  false;
     },
     addEventDragDrop(){
       const container = this.$refs.containerEvents;
-      const _this = this;
-      container.addEventListener('dragover', function(e){e.preventDefault();});
+      container.addEventListener('dragover', function(e){
+        e.preventDefault();});
       container.addEventListener('dragenter', function(e){e.preventDefault();});
-      container.addEventListener('dragleave', function(e){
+      container.addEventListener('dragleave', (e) => {
         e.preventDefault();
-        _this.delOneEvent();
         });
-      container.addEventListener('drop',function (e) {
+      container.addEventListener('drop',(e) => {
         const objEvent = store.getters.getobjDragged;
         e.preventDefault();
-        if(_this.lessThanTheLimit()){
-          _this.insertedOneEvent();
-          e.target.appendChild(objEvent);
+        if(this.countDivs()){
+          this.$refs.containerEvents.appendChild(objEvent);
         }
       });
 
@@ -76,12 +61,17 @@ export default {
     font-family: 'Roboto', sans-serif;
   }
   .list-events{
+    border:2px solid red;
     width:200px;
-    height:220px;
+    height:200px;
     background: white;
-    display:flex;
-    flex-direction: rows;
-    justify-content: center;
-    align-content: center;
+    display:grid;
+    grid-template-rows:auto;
+    justify-content: start;
+    align-items: start;
+    overflow: scroll;
+    div{
+      margin:0.2rem 0rem;
+    }
   }
 </style>

@@ -7,11 +7,11 @@
       <input type="date" v-model="actualDate">
       <input type="submit" @click="addEvent">
     </div>
-    <div class="area-events"  ref="mount">
-      <div class="area"><ListEvents/></div>
-      <div class="area"><ListEvents/></div>
-      <div class="area"><ListEvents/></div>
-      <div class="area"><ListEvents/></div>
+    <div class="area-events"  ref="month">
+      <ListEvents v-bind:idListEvents="1"/>
+      <ListEvents v-bind:idListEvents="2"/>
+      <ListEvents v-bind:idListEvents="3"/>
+      <ListEvents v-bind:idListEvents="4"/>
     </div>
   </div>
 </template>
@@ -41,10 +41,10 @@ export default {
         arrEvents.push(newEvent);
       }
     },
-    addEventToDom(newInstance){
+    addEventToDom(newInstance,month){
       newInstance.$mount(); /*mount the new instance*/
       // console.log(newInstance.$el);
-      this.$refs.containerList.appendChild(newInstance.$el); /*add to the dom*/ 
+      month.appendChild(newInstance.$el); /*add to the dom*/
       /*all the object is referenced with newInstance.$el*/
     },
     createEvent(){
@@ -52,13 +52,14 @@ export default {
     },
     validateFields(){
       if(this.actualTitle !== '' && this.actualDescription !== ''){
-        return true;  
+        return true;
       }
       else{
         return false;
       }
     },
     addEvent(){
+      let lk = this.$refs.month.querySelectorAll('.list-events');
       if(this.validateFields()){
         const arrEvent = this.createEvent();
         let ComponentClass = Vue.extend(Event);
@@ -70,24 +71,12 @@ export default {
             deadLine:arrEvent[3]
           }
         });
-        this.addEventToDom(instance);
+        this.addEventToDom(instance,lk[0]);
       }
-    },
-    // startEvent(){
-    //   this.actualTitle = 'Test';
-    //   this.actualDescription = 'Test desc';
-    //   this.actualDate = '2020-07-01';
-    //   this.addEvent();
-    // }
+    }
   },
   mounted(){
-    // const size = this.$refs.mount.lenght;
-    // for(var i=0;i < size;i++){
-    //   var item = this.$refs.mount[i];
-    //   console.log(item);
-    // }
-    //this.actualDate = new Date();
-    //this.startEvent();
+    this.actualDate = new Date();
   }
 }
 </script>

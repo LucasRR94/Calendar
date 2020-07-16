@@ -10,7 +10,6 @@ export const store = new Vuex.Store({
   mutations: {
     setobjDragged (state , obj) {
       state.objDragged = obj;
-      console.log(`Here:${state.objDragged}`);
     }
   },
   actions: {

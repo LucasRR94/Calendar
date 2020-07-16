@@ -1,16 +1,20 @@
 <template>
   <div class="event" draggable="true" ref="eventObj">
-    <div class="event-container-title" v-if="show" @click="changeShowDescription">
-      <span>{{title}}</span>
+    <div class="event-wrapper" v-show="show" @click="changeShowDescription">
+      <div class="event-wrapper-title">
+        <span>{{title}}</span>
+      </div>
+      <div class="event-wrapper-description" ref="descriptionRef">
+        <span>{{description}}</span>
+      </div>
     </div>
-    <div class="event-icon" v-else @click="changeShowDescription">
+    <div class="event-icon" v-show = "showIcon" @click="changeShowDescription">
       <span>E</span>
     </div>
   </div>
 
 </template>
 <script>
-
 import eventImg from '../img/icon1.svg';
 import {store} from '../store';
 
@@ -19,6 +23,7 @@ export default {
   props:["uniqueId","title","description","deadline"],
   data(){
     return{
+      showIcon:true,
       titleEvent:this.title,
       descriptionEvent:this.description,
       deadLineEvent:this.deadLine,
@@ -30,6 +35,10 @@ export default {
   methods:{
     changeShowDescription(){
       this.show=!this.show;
+      this.showIcon = !this.showIcon;
+      if(this.description.length > 20){
+        this.$refs.descriptionRef.style.overflow='scroll';
+      }
     },
     setDescription(description){
       this.description = description;
@@ -77,6 +86,7 @@ export default {
   mounted(){
     this.createId();
     this.addEventDragAndDrop();
+    //this.counter();
   }
 }
 </script>
@@ -95,29 +105,54 @@ export default {
     display:none;
   }
   .event{
-    padding:.2rem .2rem;
+    max-width:170px;
+    max-height:200px;
+    min-width: 30px;
+    min-height: 30px;
+    padding:.2rem;
     width:auto;
     height:auto;
-    max-width:200px;
-    &-container-title{
-      background: black;
+    &-wrapper{
+      width:170px;
+      height:200px;
+      background: $main-color-card;
       display: flex;
-      justify-content: center;
-      border-radius:.4rem;
-      border:2px solid #f4f4f4;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding:.2rem;
+      position:relative;
+      div{
+        margin-top:.2rem;
+        width: auto;
+        height: auto;
+        border:1px solid $primary-divider-card-icon;
+        border-radius: .2rem;
+        span{
+          padding:.2rem;
+        }
+      }
+      &-title{
+        flex:.4;
+        text-align:center;
+      }
+      &-description{
+        flex:1;
+        text-align:start;
+      }
       span{
-        color:blue;
+        color:$text-color-card-icon;
         font-size:1.2rem;
       }
     }
     &-icon{
-      max-width:auto;
-      max-height:auto;
-      border-radius: 1rem;
+      width:30px;
+      height:30px;
+      border-radius:50%;
       background:$primary-green-icon;
       @include center-div;
+      padding:.3rem;
+      position: static;
       span{
-        padding:0.2rem;
         font-size:1.2rem;
         color:$primary-green-font-icon;
       }

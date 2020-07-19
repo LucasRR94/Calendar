@@ -1,6 +1,13 @@
 <template>
-  <div class="list-events" ref='containerEvents'>
-
+  <div class="list-events sizing-cell-day" ref='containerEvents'>
+    <div class="show-event" v-if="bigView">
+      <div class="show-event-title">
+        {{getTitle}}
+      </div>
+      <div class="show-event-description">
+        {{getDescription}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -12,7 +19,7 @@ import {store} from '../store';
 
 export default {
   name:"ListEvents",
-  props:['idListEvents'],
+  props:['id'],
   data(){
     return{
       numbEvents: {
@@ -21,7 +28,21 @@ export default {
       }
     }
   },
+  computed:{
+    bigView(){
+      return store.getters.getEventTriggered;
+    },
+    getTitle(){
+      return store.getters.getEventObjTitle;
+    },
+    getDescription(){
+      return store.getters.getEventObjDescription;
+    }
+  },
   methods: {
+    loadEvent(){
+      console.log('triggered');
+    },
     countDivs(){ // if true show just on list mode
       const numbChilds =  this.$refs.containerEvents.childNodes.length;
       return  numbChilds < 5 ?  true :  false;
@@ -46,6 +67,7 @@ export default {
   },
   mounted(){
     this.addEventDragDrop();
+    this.$refs.containerEvents.id = this.id;
   }
 }
 </script>
@@ -61,17 +83,16 @@ export default {
     font-family: 'Roboto', sans-serif;
   }
   .list-events{
-    border:2px solid red;
-    width:200px;
-    height:200px;
-    background: white;
+    width:100%;
+    height:100%;
     display:grid;
-    grid-template-rows:auto;
+    grid-template-rows:1fr;
     justify-content: start;
     align-items: start;
     overflow: scroll;
-    div{
-      margin:0.2rem 0rem;
-    }
+    max-height: inherit;
+  }
+  .sizing-cell-day{
+      background: rgb(40, 150, 250);
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="event" draggable="true" ref="eventObj">
-    <div class="event-wrapper" v-show="show" @click="changeShowDescription">
+    <div class="event-wrapper" v-show="show" @click="changeShowDescription" ref="eventShowDescId">
       <div class="event-wrapper-title">
         <span>{{title}}</span>
       </div>
@@ -8,8 +8,10 @@
         <span>{{description}}</span>
       </div>
     </div>
-    <div class="event-icon" v-show = "showIcon" @click="changeShowDescription">
-      <span>E</span>
+    <div class="event-title" v-show = "showIcon" @click="changeShowDescription">
+      <div class="event-title-wrapper">
+        <span>{{title}}</span>
+      </div>
     </div>
   </div>
 
@@ -20,7 +22,7 @@ import {store} from '../store';
 
 export default {
   name:'Event',
-  props:["uniqueId","title","description","deadline"],
+  props:["uniqueId","title","description","deadLine"],
   data(){
     return{
       showIcon:true,
@@ -34,11 +36,18 @@ export default {
   },
   methods:{
     changeShowDescription(){
-      this.show=!this.show;
-      this.showIcon = !this.showIcon;
-      if(this.description.length > 20){
-        this.$refs.descriptionRef.style.overflow='scroll';
-      }
+      const top = this.$refs.eventObj.offsetTop;
+      const left = this.$refs.eventObj.offsetLeft;
+      // this.show=!this.show;
+      // this.showIcon = !this.showIcon;
+      // if(this.description.length > 20){
+      //   this.$refs.descriptionRef.style.overflow='scroll';
+      // }
+      this.loadBigView();
+      store.commit('setTrigEvent');
+    },
+    loadBigView(){
+      store.commit('setEventObjs',[this.title,this.description]);
     },
     setDescription(description){
       this.description = description;
@@ -67,9 +76,6 @@ export default {
       const _this = this;
       ref.addEventListener('dragstart',function(e){
         store.commit('setobjDragged',e.target);
-        const img = new Image();
-        img.src = eventImg;
-        e.dataTransfer.setDragImage(img,2,2);
         setTimeout(()=>{
           e.target.className='hidden';
         },0);
@@ -107,8 +113,6 @@ export default {
   .event{
     max-width:170px;
     max-height:200px;
-    min-width: 30px;
-    min-height: 30px;
     padding:.2rem;
     width:auto;
     height:auto;
@@ -120,7 +124,8 @@ export default {
       flex-direction: column;
       justify-content: flex-start;
       padding:.2rem;
-      position:relative;
+      position:absolute;
+      z-index:2;
       div{
         margin-top:.2rem;
         width: auto;
@@ -144,25 +149,24 @@ export default {
         font-size:1.2rem;
       }
     }
-    &-icon{
-      width:30px;
-      height:30px;
-      border-radius:50%;
+    &-title{
+      width:auto;
+      height:auto;
+      border-radius:.2rem;
       background:$primary-green-icon;
-      @include center-div;
       padding:.3rem;
       position: static;
-      span{
+      &-wrapper{
         font-size:1.2rem;
         color:$primary-green-font-icon;
       }
-    }
-    &-icon:hover{
-      background:$hovered-green-icon;
-      span{
-        font-size:1.2rem;
+      &-wrapper:hover{
         color:$hovered-green-icon-font;
       }
     }
+    &-title:hover{
+        background:$hovered-green-icon; 
+    }
+    
   }
 </style>

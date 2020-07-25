@@ -1,0 +1,353 @@
+@import '../style/_configs.scss';
+.days-week{
+  display: grid;
+  grid-template-rows:.2fr auto;
+  width: 100%;
+  height: 100%;
+}
+.hidden{
+  display:none;
+}
+.border-right-extra{
+  border-right: 1px $secundary-separation-color-dark solid;
+}
+// -------------------------------------------------------
+.light-mode{
+  border: 1px solid $secundary-separation-color-light;
+}
+.header-light-mode{
+  background:$primary-color-light;
+  border-bottom:1px solid $secundary-separation-color-light;
+  input{
+    background: $secundary-separation-color-light;
+    color:$default-font-color-light;
+  }
+}
+.body-light-mode{
+  background: $primary-color-light;
+  .calendar-body-wrapper-headers{
+    border-bottom:1px $secundary-separation-color-light solid;
+    .calendar-body-wrapper-headers-days{
+      color:$font-color-light;
+    }
+  }
+}
+.body-light-mode{
+  .calendar-body-wrapper-weeks{
+    &-days{
+      border-bottom:1px $secundary-separation-color-light solid;
+      &-day{
+        color:$font-color-light;
+      }
+    }
+  }
+}
+// -------------------------------------------------------
+.dark-mode{
+  border: 1px solid $secundary-separation-color-dark;
+}
+.header-dark-mode{
+  background:$primary-color-dark;
+  border-bottom:1px solid $secundary-separation-color-dark;
+  input{
+    color:$default-font-color-dark;
+  }
+}
+.body-dark-mode{
+  background: $primary-color-dark;
+  .calendar-body-wrapper-headers{
+    border-bottom:1px $secundary-separation-color-dark solid;
+    .calendar-body-wrapper-headers-days{
+      color:$font-color-dark;
+    }
+  }
+}
+.body-dark-mode{
+  .calendar-body-wrapper-weeks{
+    &-days{
+      border-bottom:1px $secundary-separation-color-dark solid;
+      &-day{
+        color:$font-color-dark;
+      }
+    }
+  }
+}
+main{
+  border:2px solid purple;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width:100%;
+  height:100%;
+}
+.create-event{
+  width:auto;
+  height:auto;
+  &-wrapper{
+    width: 100%;
+    height: 100%;
+    border:2px solid red;
+  }
+}
+.calendar{
+  width:auto;
+  height:auto;
+  display:flex;
+  flex-direction: column;
+  &-header{
+    display: flex;
+    width:auto;
+    height:auto;
+    &-input-area{
+      flex:.5;
+      width:auto;
+      height:auto;
+      display:flex;
+      justify-content: center;
+      padding:.2rem 0;
+      input{
+        border:none;
+        border-radius:.2rem;
+        padding:.1rem;
+        font-size:1rem;
+        text-align: center;
+      }
+    }
+  }
+  &-body{
+    width: auto;
+    display:grid;
+    grid-template-rows: .2fr auto;
+    &-wrapper-headers{
+      width:inherit;
+      height: auto;
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      &-days{
+        height:auto;
+        width:auto;
+        list-style: none;
+        font-size:1rem;
+        font-weight: bold;
+        padding-top:.1rem;
+        span{
+          margin-left:.1rem;
+        }
+      }
+    }
+    &-wrapper-weeks{
+      width:inherit;
+      height:auto;
+      display:grid;
+      grid-template-columns :repeat(7,1fr);
+      &-days{
+        list-style: none;
+        height:auto;
+        width:auto;
+        &-day{
+          padding-top:.1rem;
+          font-size:1rem;
+          font-weight:bold;
+          display:grid;
+          grid-template-rows:1fr 1.8fr;
+          span{
+            margin-left:0.1rem;
+          }
+        }
+      }
+    }
+  }
+}
+@media(max-width:425px){
+  .calendar{
+    min-width: 300px;
+    min-height: 340px;
+    width:100%;
+    height:100%;
+    max-width: 400px;
+    &-header{
+      width:inherit;
+      height:40px;
+      &-input-area{
+        height:auto;
+        display:flex;
+        input{
+          max-width: 80px;
+          padding:.1rem;
+        }
+      }
+    }
+    &-body{
+      max-width:inherit;
+      height:auto;
+      min-height: 300px;
+      &-wrapper-headers{
+        width:auto;
+        height:auto;
+        &-days{
+          height:auto;
+          width:auto;
+        }
+      }
+      &-wrapper-weeks{
+        width: auto;
+        height: auto;
+        max-width: inherit;
+        &-days{
+          height:auto;
+          width:auto;
+        }
+      }
+    }
+  }
+}
+@media(min-width:425px){
+  .calendar{
+    min-width: 400px;
+    max-width:500px;
+    max-height:600px;
+    min-height: 500px;
+    width: auto;
+    height: auto;
+    &-header{
+      width:inherit;
+      height:40px;
+      &-input-area{
+        height:auto;
+        input{
+          max-width: 80px;
+          padding:.1rem;
+        }
+      }
+    }
+    &-body{
+      min-height: 460px;
+      max-height: inherit;
+      max-width: inherit;
+      min-width:inherit;
+      &-wrapper-headers{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height: auto;
+        &-days{
+          height:auto;
+          width:auto;
+        }
+      }
+      &-wrapper-weeks{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height:auto;
+        &-days{
+          height:auto;
+          width:auto;
+        }
+      }
+    }
+  }
+}
+@media(min-width:768px){
+  .calendar{
+    min-width: 600px;
+    max-width:700px;
+    max-height:600px;
+    min-height: 600px;
+    &-header{
+      width:inherit;
+      height:50px;
+      &-input-area{
+        height:auto;
+        display:flex;
+        input{
+          max-width: 80px;
+          padding:.1rem;
+          font-size:1.2rem;
+        }
+      }
+    }
+    &-body{
+      min-height: 550px;
+      max-height: inherit;
+      max-width: inherit;
+      min-width:inherit;
+      &-wrapper-headers{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height: auto;
+        &-days{
+          font-size:1.2rem;
+          height:auto;
+          width:auto;
+        }
+      }
+      &-wrapper-weeks{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height:auto;
+        &-days{
+          height:auto;
+          width:auto;
+          &-day{
+            font-size:1.2rem;
+          }
+        }
+      }
+    }
+  }
+}
+@media(min-width:1024px){
+  .calendar{
+    min-width: 900px;
+    max-width:1000px;
+    max-height:600px;
+    min-height: 860px;
+    &-header{
+      width:inherit;
+      height:90px;
+      &-input-area{
+        height:auto;
+        display:flex;
+        input{
+          min-width:50px;
+          max-width: 150px;
+          padding:.1rem;
+          font-size:1.6rem;
+        }
+      }
+    }
+    &-body{
+      min-height: 800px;
+      max-height: inherit;
+      max-width: inherit;
+      min-width:inherit;
+      &-wrapper-headers{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height: auto;
+        &-days{
+          font-size:1.6rem;
+          height:auto;
+          width:auto;
+        }
+      }
+      &-wrapper-weeks{
+        width:inherit;
+        min-width:inherit;
+        max-width: inherit;
+        height:auto;
+        &-days{
+          height:auto;
+          width:auto;
+          &-day{
+            font-size:1.4rem;
+          }
+        }
+      }
+    }
+  }
+}

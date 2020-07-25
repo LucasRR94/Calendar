@@ -12,10 +12,10 @@
     <div class="calendar" v-bind:class="{'dark-mode':darkMode,'light-mode':lightMode}">
       <div class="calendar-header"  v-bind:class="{'header-dark-mode':darkMode,'header-light-mode':lightMode}">
         <div class="calendar-header-input-area">
-          <input type="number" name="input-year" min="1970" v-on:input="genCalendar" v-model="year" placeholder="year">
+          <input type="number" name="input-year" min="1970" v-on:input="genCalendarAndLoadEvents" v-model="year" placeholder="year">
         </div>
         <div class="calendar-header-input-area">
-          <input type="number" name="input-month" min="1" v-on:input="genCalendar" v-model="month" placeholder="month">
+          <input type="number" name="input-month" min="1" v-on:input="genCalendarAndLoadEvents" v-model="month" placeholder="month">
         </div>
       </div>
       <div class="calendar-body" v-bind:class="{'body-dark-mode':darkMode,'body-light-mode':lightMode}">
@@ -26,12 +26,13 @@
           <li class="calendar-body-wrapper-weeks-days" v-bind:class="{'border-right-extra':isNotCorner(index1+1)}" v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1">
             <div class="calendar-body-wrapper-weeks-days-day days-week" v-if="(index1 >= offsetDaysOfMonth && !indexBiggerThenSizeOfMonth(index1 + 1 - offsetDaysOfMonth))">
               <span>{{(index1+1-offsetDaysOfMonth)}}</span>
-              <ListEvents :id="getId(index1+1-offsetDaysOfMonth,month,year)"/>
+              <ListEvents :id="getId(index1+1-offsetDaysOfMonth,month,year)" @droppedEvent="changeEventForOtherList"/>
             </div>
           </li>
         </ul>
       </div>
     </div>
+    <button @click="changeMode">Change!!!</button> 
   </main>
 </template>
 
@@ -40,9 +41,9 @@ import Vue from 'vue'
 import ListEvents from './ListEvents.vue';
 import Event from '@/components/Event';
 import { v4 as uuidv4 } from 'uuid';
+import {store} from '../store';
 
-
-export default {
+export default{
   name:'Calendar',
   data(){
     return{
@@ -50,7 +51,6 @@ export default {
       newTitle:'',
       newContent:'',
       days:7,
-      weeks:0,
       year:'',
       month:'',
       maxLenghtMonth:0,
@@ -65,21 +65,98 @@ export default {
       ],
       firstDayOfmonth:'Sun',
       offsetDaysOfMonth:0,
-      darkMode:true,
-      lightMode:false
+      darkMode:false,
+      lightMode:true,
+      objEvent:[],
+      idOfListEvents:'',
+      listOfEvents:{},
+      arrayOfEventsForListEvents:[]
     }
   },
   components:{
       ListEvents
   },
-  methods:{
-    addEventToDom(newInstance,day){
-      newInstance.$mount(); /*the new instance*/
-      day.appendChild(newInstance.$el); /*add to the dom*/
-      /*all the object is referenced with newInstance.$el*/
+  computed:{
+    signal(){
+      return store.getters.getIdOfDragged;
+    }
+  },
+  watch:{
+    arrayOfEventsForListEvents(){
+      store.commit('setlistOfListOfEvents',this.arrayOfEventsForListEvents);
+    }
+  },
+  methods: {
+    changeEventForOtherList(oldLocation,newLocation){
+      const oldLocal = oldLocation.split(":"); 
+      const oldKey = oldLocal[0];
+      const idEvent = oldLocal[1];
+      const event = this.getEventFromListEvents(oldKey,idEvent);
+      this.setNewEventInlistOfEvents(newLocation.split("-"),event,idEvent);
+      this.setEventsForListEvents();
+    },
+    getEventFromListEvents(localitization,idEvent){
+      /*this method , get an element,and eliminate from list Events*/
+      const dateStr = localitization.split("-");
+      const data = this.listOfEvents[dateStr[0]][dateStr[1]][dateStr[2]][idEvent];  
+      delete(this.listOfEvents[dateStr[0]][dateStr[1]][dateStr[2]][idEvent]); // del the key
+      return data;
+    },
+    genCalendarAndLoadEvents(){
+      this.genCalendar();
+      this.setEventsForListEvents();
+    },
+    setEventsForListEvents(){
+      this.arrayOfEventsForListEvents = [];
+      const sizeInDays = this.maxLenghtMonth;
+      const eventsRegistred = this.findEventsOfMonth();
+      let sizeOfRegistredEvents = 0;
+      try{
+        sizeOfRegistredEvents = Object.keys(eventsRegistred).length;
+      }
+      catch(err){
+        sizeOfRegistredEvents = 0;
+      }
+      finally{
+        if(sizeOfRegistredEvents == 0){
+          for(let i = 0;i < sizeInDays;i++){
+            this.arrayOfEventsForListEvents.push([]);
+          }
+        }else{
+          for(let i = 0;i < sizeInDays;i++){
+            let possibleEvent;
+            try{
+              possibleEvent = eventsRegistred[i];
+              this.arrayOfEventsForListEvents.push(possibleEvent);   
+            }
+            catch(err){
+              this.arrayOfEventsForListEvents.push([]);   
+            }
+          }
+        
+        }
+      }
+    },
+    findEventsOfMonth(){
+      /*Search in list events for specific year, month
+      to load in component listEvents*/
+      let result = {};
+      try{
+        const month = this.listOfEvents[this.year][this.month];
+        return month;
+      }
+      catch(err){
+        return {};
+      }
     },
     createEvent(){
-      return[uuidv4(),this.newTitle,this.newContent,this.newDeadLine];
+      const idGenerated = uuidv4();
+      return{
+        "id":idGenerated,
+        "title":this.newTitle,
+        "description":this.newContent,
+        "hour":this.newDeadLine
+        };
     },
     validateFields(){
       if(this.newTitle !== '' && this.newContent !== ''){
@@ -93,7 +170,7 @@ export default {
       if(this.newDeadLine!==''){
         const actualDate = new Date();
         const newDeadLineDate = new Date(this.newDeadLine);
-        if ((newDeadLineDate.getUTCMonth()+1) === (actualDate.getUTCMonth()+1) &&
+        if((newDeadLineDate.getUTCMonth()) === (actualDate.getUTCMonth()) &&
       (newDeadLineDate.getUTCFullYear()) === (actualDate.getUTCFullYear())){
           return true;
         }else{
@@ -104,36 +181,53 @@ export default {
         return false;
       }
     },
-    newEvent(){
-      if(this.validationDate()){
-        let dayListEvents = document.getElementById(this.newDeadLine);
-        if(this.validateFields() && dayListEvents!= null){
-          const arrEvent = this.createEvent();
-          let ComponentClass = Vue.extend(Event);
-          let instance = new ComponentClass({
-            propsData:{
-              uniqueId:arrEvent[0],
-              title:arrEvent[1],
-              description:arrEvent[2],
-              deadLine:arrEvent[3]
-            }
-          });
-          this.addEventToDom(instance,dayListEvents);
-        }
-      }else{
-        console.log("required change month");
+    createObjKeyIfNotExist(mainObj,option){
+      let cond = true;
+      let i = 0;
+      let copyObj = mainObj;
+      while(cond){
+          if(i == 3){
+              cond = false;
+          }
+          else{
+              let objTest;
+              objTest = copyObj[option[i]];
+              if(typeof(objTest) == 'undefined'){
+                  let backup = {};
+                  copyObj[option[i]] = backup;
+                  copyObj = backup;
+              }
+              if(typeof(objTest) == 'object'){
+                  let backup = {};
+                  backup = copyObj[option[i]];
+                  copyObj = backup;
+              }
+          }
+          i++;
       }
+      return copyObj;
+    },
+    setNewEventInlistOfEvents(dateStr,event,idEvent){
+      const option = [String(Number(dateStr[0])),String(Number(dateStr[1])),String(Number(dateStr[2]))];
+      const day = this.createObjKeyIfNotExist(this.listOfEvents,option);
+      day[idEvent] = event; // added event in the object listEvents
+    },
+    newEvent(){
+      if(!this.validateFields()){ return ; } // contain the fields empty
+      if(!this.validationDate()){ // change the calendar to the month and year of the event that is beeing added.
+        const dateStr = this.newDeadLine.split("-");
+        this.year = Number(dateStr[0]);
+        this.month = Number(dateStr[1]);
+        this.genCalendar(); // Change the calendar to other month
+      }
+      const arrEvent = this.createEvent(); // contains obj Event
+      const idEvent = arrEvent["id"];
+      const dateStr = this.newDeadLine.split("-");
+      this.setNewEventInlistOfEvents(dateStr,arrEvent,idEvent);
+      this.setEventsForListEvents();
     },
     getId(day,month,year){
-      let finalDay = day;
-      let finalMonth = month;
-      if(day < 10){
-        finalDay = `0${day}`;
-      }
-      if(month < 10){
-        finalMonth = `0${month}`;
-      }
-      return `${year}-${finalMonth}-${finalDay}`;
+      return `${year}-${month}-${day}`;
     },
     changeMode(){
       this.lightMode = this.darkMode;
@@ -178,16 +272,8 @@ export default {
     },
     genCalendar(){
       this.getFirstDayOfMonth();
-      this.loadLengthOfMonth();
+      this.getLenthOfMonthInDays();
       this.offsetDaysOfMonth = this.daysOfWeekList.indexOf(this.firstDayOfmonth);
-      if(this.validationMonth(this.month) && this.validationYear(this.year)){
-        if(Number(this.month) == 2){
-          this.isLeapYear(Number(this.year))?this.weeks = 5 :this.weeks = 4
-        }
-        else{
-          this.weeks = 5;
-        }
-      }
     },
     indexBiggerThenSizeOfMonth(index){
       if(index <= this.maxLenghtMonth){
@@ -202,14 +288,14 @@ export default {
       const newDay = new Date(`${this.year}/${this.month}/01`); // get the first Day of actual Month
       this.firstDayOfmonth = this.daysOfWeekList[newDay.getDay()];
     },
-    loadLengthOfMonth(){
+    getLenthOfMonthInDays(){
       const actualMonth = Number(this.month);
-      if(actualMonth <=12){
+      if(actualMonth >0 && actualMonth <=12){
         if(actualMonth==2){
           (this.isLeapYear(this.year) == true) ? this.maxLenghtMonth = 29 : this.maxLenghtMonth=28;
         }
         else{
-          (actualMonth==4)||(actualMonth==11)|| (actualMonth==9)||(actualMonth==6) ? this.maxLenghtMonth=30 : this.maxLenghtMonth=31;
+          (actualMonth==4)||(actualMonth==11)|| (actualMonth==9)||(actualMonth==6) ? this.maxLenghtMonth=30 : this.maxLenghtMonth = 31;
         }
       }
       else{
@@ -221,8 +307,8 @@ export default {
     setTimeout(()=>{
       this.setInitualValueYearMonth();
       this.genCalendar();
+      this.setEventsForListEvents();
     },5000);
-
   }
 }
 </script>

@@ -1,14 +1,6 @@
 <template>
   <div class="event" draggable="true" ref="eventObj">
-    <div class="event-wrapper" v-show="show" @click="changeShowDescription" ref="eventShowDescId">
-      <div class="event-wrapper-title">
-        <span>{{title}}</span>
-      </div>
-      <div class="event-wrapper-description" ref="descriptionRef">
-        <span>{{description}}</span>
-      </div>
-    </div>
-    <div class="event-title" v-show = "showIcon" @click="changeShowDescription">
+    <div class="event-title">
       <div class="event-title-wrapper">
         <span>{{title}}</span>
       </div>
@@ -22,77 +14,46 @@ import {store} from '../store';
 
 export default {
   name:'Event',
-  props:["uniqueId","title","description","deadLine"],
+  props:["idParent","uniqueId","title"],
   data(){
     return{
-      showIcon:true,
-      titleEvent:this.title,
-      descriptionEvent:this.description,
-      deadLineEvent:this.deadLine,
-      id:this.uniqueId,
-      active:false,
-      show:false,
+      
     }
-  },
+  },  
   methods:{
-    changeShowDescription(){
-      const top = this.$refs.eventObj.offsetTop;
-      const left = this.$refs.eventObj.offsetLeft;
-      // this.show=!this.show;
-      // this.showIcon = !this.showIcon;
-      // if(this.description.length > 20){
-      //   this.$refs.descriptionRef.style.overflow='scroll';
-      // }
-      this.loadBigView();
-      store.commit('setTrigEvent');
-    },
-    loadBigView(){
-      store.commit('setEventObjs',[this.title,this.description]);
-    },
-    setDescription(description){
-      this.description = description;
-    },
-    setTitle(title){
-      this.title = title;
-    },
-    getTitle(){
-      return this.title;
-    },
-    setDeadLine(deadLine){
-      this.deadline = deadLine;
-    },
-    setEvent(deadline,description){
-      this.setDescription(description);
-      this.setDeadLine(deadLine);
-    },
-    getDeadline(){
-      return this.deadLine;
-    },
-    getDescription(){
-      return this.description;
-    },
+    /* remain ...*/
     addEventDragAndDrop(){
       const ref = this.$refs.eventObj;
       const _this = this;
-      ref.addEventListener('dragstart',function(e){
-        store.commit('setobjDragged',e.target);
+
+      ref.addEventListener('dragstart',(e)=>{
+        store.commit('setDraggedEvent',`${this.idParent}:${this.uniqueId}`);
         setTimeout(()=>{
           e.target.className='hidden';
         },0);
       });
-      ref.addEventListener('dragend',function(e){
-        this.className = 'event';
+
+      ref.addEventListener('dragend',(e)=>{
         e.preventDefault();
+        console.log(e);
+        e.target.className = 'event';
+        // const lastParent = this.idParent;
+        // const newParent = _this.$refs.eventObj.parentNode.id;
+        // this.idParent = _this.$refs.eventObj.parentNode.id;
+        // const allKeysValues = store.getters.getKeyEventValueListEvent;
+        // store.commit('setIdLastParent',store.getters.getKeyEventValueListEvent[this.id.split("id-")[1]]);
+        // store.commit('setIdNewParent',newParent);
+        // store.commit('setObjDropped',[this.id.split("id-")[1]]);
+        // store.commit('trigRequiredTransfer');
       });
     },
     createId(){
-      this.$refs.eventObj.id = `id-${this.id}`;
+      this.$refs.eventObj.id = `${this.id}`;
     }
   },
   mounted(){
     this.createId();
     this.addEventDragAndDrop();
-    //this.counter();
   }
 }
 </script>

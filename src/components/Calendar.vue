@@ -1,38 +1,33 @@
 <template>
   <main>
-    <div class="create-event">
-      <div class="create-event-wrapper">
-          <h3>Create New Event</h3>
-          <input type="text" name="new title" v-model="newTitle" placeholder="Título">
-          <input type="text" name="new content" v-model="newContent" placeholder="Conteúdo">
-          <input type="date" v-model="newDeadLine">
-          <input type="submit" value="Novo Título" @click="newEvent">
-      </div>
-    </div>
-    <div class="calendar" v-bind:class="{'dark-mode':darkMode,'light-mode':lightMode}">
-      <div class="calendar-header"  v-bind:class="{'header-dark-mode':darkMode,'header-light-mode':lightMode}">
+    <div class="calendar">
+      <div class="calendar-header">
         <div class="calendar-header-input-area">
-          <input type="number" name="input-year" min="1970" v-on:input="genCalendarAndLoadEvents" v-model="year" placeholder="year">
+          <!-- <input type="number" name="input-year" min="1970" v-on:input="genCalendarAndLoadEvents" v-model="year" placeholder="year"> -->
+          <span>{{abreviation()}}</span>    
         </div>
         <div class="calendar-header-input-area">
-          <input type="number" name="input-month" min="1" v-on:input="genCalendarAndLoadEvents" v-model="month" placeholder="month">
+          <!-- <input type="number" name="input-month" min="1" v-on:input="genCalendarAndLoadEvents" v-model="month" placeholder="month"> -->
+          <span>{{year}}</span>
         </div>
       </div>
-      <div class="calendar-body" v-bind:class="{'body-dark-mode':darkMode,'body-light-mode':lightMode}">
+      <div class="calendar-body">
         <ul class="calendar-body-wrapper-headers">
-          <li class="calendar-body-wrapper-headers-days" v-bind:class="{'border-right-extra':isNotCorner(i+1)}" v-for="(index,i) in daysOfWeekList" :key="i"><span>{{daysOfWeekList[i]}}</span></li>
+          <li class="calendar-body-wrapper-headers-days" v-for="(index,i) in daysOfWeekList" :key="i">
+            <span>{{daysOfWeekList[i]}}</span>
+          </li>
         </ul>
         <ul class="calendar-body-wrapper-weeks">
-          <li class="calendar-body-wrapper-weeks-days" v-bind:class="{'border-right-extra':isNotCorner(index1+1)}" v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1">
-            <div class="calendar-body-wrapper-weeks-days-day days-week" v-if="(index1 >= offsetDaysOfMonth && !indexBiggerThenSizeOfMonth(index1 + 1 - offsetDaysOfMonth))">
-              <span>{{(index1+1-offsetDaysOfMonth)}}</span>
-              <ListEvents :id="getId(index1+1-offsetDaysOfMonth,month,year)" @droppedEvent="changeEventForOtherList"/>
+          <li class="calendar-body-wrapper-weeks-days" v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1"> 
+            <div class="calendar-body-wrapper-weeks-days-day" v-bind:class="{'other-month-grey':!actualMonth(index1)}">
+              <div class="calendar-body-wrapper-weeks-days-day-container" v-bind:class="{'evidence-day':evidenceday(index1)}" @click="inEvidence(index1)">
+                <span>{{getActualDay(index1)}}</span>
+              </div>
             </div>
           </li>
         </ul>
       </div>
     </div>
-    <button @click="changeMode">Change!!!</button> 
   </main>
 </template>
 
@@ -47,13 +42,25 @@ export default{
   name:'Calendar',
   data(){
     return{
-      newDeadLine:'',
-      newTitle:'',
-      newContent:'',
       days:7,
       year:'',
       month:'',
       maxLenghtMonth:0,
+      maxLenghtOfLastMonth:0,
+      monthsExplicit:{
+        1:"JANUARY",
+        2:"FEBRUARY",
+        3:"MARCH",
+        4:"APRIL",
+        5:"MAY",
+        6:"JUNE",
+        7:"JULY",
+        8:"AUGUST",
+        9:"SEPTEMBER",
+        10:"OCTOBER",
+        11:"NOVEMBER",
+        12:"DECEMBER"
+      },
       daysOfWeekList:[
         'Sun',
         'Mon',
@@ -70,7 +77,8 @@ export default{
       objEvent:[],
       idOfListEvents:'',
       listOfEvents:{},
-      arrayOfEventsForListEvents:[]
+      arrayOfEventsForListEvents:[],
+      evidenceDayPosition:-1
     }
   },
   components:{
@@ -87,6 +95,60 @@ export default{
     }
   },
   methods: {
+    inEvidence(index){
+      const actual = index + 1;
+      if(!(index < this.offsetDaysOfMonth || !(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth)))){
+        this.evidenceDayPosition = (actual - this.offsetDaysOfMonth); 
+      } 
+    },
+    evidenceday(position){
+      if(this.actualMonth(position)){ // it's a valid month
+        if(this.evidenceDayPosition == (position + 1 - this.offsetDaysOfMonth)){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    },
+    abreviation(){
+      let finalReturn = "";
+      try{
+        const abreviationExplicitMonth = this.monthsExplicit[this.month].substring(0,3);
+        finalReturn = abreviationExplicitMonth;
+      }
+      catch(err){
+        finalReturn = "";
+      }
+      finally{
+        return finalReturn;
+      }
+    },
+    actualMonth(index){
+      const actual = index + 1;
+      if((index < this.offsetDaysOfMonth) || !(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth))){
+        return false;
+      }
+      else{
+        return true;
+      }  
+    },
+    getActualDay(index){
+      const actual = index + 1;
+      if(index < this.offsetDaysOfMonth){
+        return (this.maxLenghtOfLastMonth -  (this.offsetDaysOfMonth - (index + 1)));
+      }
+      else{
+        if(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth)){
+          return (actual - this.offsetDaysOfMonth);
+        }
+        else{
+          return (actual - this.offsetDaysOfMonth) - this.maxLenghtMonth;
+        }
+      }
+    },
     changeEventForOtherList(oldLocation,newLocation){
       const oldLocal = oldLocation.split(":"); 
       const oldKey = oldLocal[0];
@@ -271,8 +333,12 @@ export default{
       this.year = obj.getUTCFullYear();
     },
     genCalendar(){
+      const lastMonth = () => {
+        return (this.month - 1 == 0) ? 12 : this.month -1;
+      };
       this.getFirstDayOfMonth();
-      this.getLenthOfMonthInDays();
+      this.maxLenghtMonth = this.getLenthOfMonthInDays(this.month);
+      this.maxLenghtOfLastMonth = this.getLenthOfMonthInDays(lastMonth());
       this.offsetDaysOfMonth = this.daysOfWeekList.indexOf(this.firstDayOfmonth);
     },
     indexBiggerThenSizeOfMonth(index){
@@ -288,15 +354,18 @@ export default{
       const newDay = new Date(`${this.year}/${this.month}/01`); // get the first Day of actual Month
       this.firstDayOfmonth = this.daysOfWeekList[newDay.getDay()];
     },
-    getLenthOfMonthInDays(){
-      const actualMonth = Number(this.month);
+    
+    getLenthOfMonthInDays(month){
+      const actualMonth = Number(month);
+      let maxSize = 0;
       if(actualMonth >0 && actualMonth <=12){
         if(actualMonth==2){
-          (this.isLeapYear(this.year) == true) ? this.maxLenghtMonth = 29 : this.maxLenghtMonth=28;
+          (this.isLeapYear(this.year) == true) ? maxSize = 29 : maxSize=28;
         }
         else{
-          (actualMonth==4)||(actualMonth==11)|| (actualMonth==9)||(actualMonth==6) ? this.maxLenghtMonth=30 : this.maxLenghtMonth = 31;
+          (actualMonth==4)||(actualMonth==11)|| (actualMonth==9)||(actualMonth==6) ? maxSize=30 : maxSize = 31;
         }
+        return maxSize;
       }
       else{
         return 0;
@@ -304,11 +373,9 @@ export default{
     }
   },
   mounted(){
-    setTimeout(()=>{
-      this.setInitualValueYearMonth();
-      this.genCalendar();
-      this.setEventsForListEvents();
-    },5000);
+    this.setInitualValueYearMonth();
+    this.genCalendar();
+    this.setEventsForListEvents();
   }
 }
 </script>

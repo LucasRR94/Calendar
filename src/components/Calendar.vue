@@ -3,24 +3,42 @@
     <div class="calendar">
       <div class="calendar-header">
         <div class="calendar-header-input-area">
-          <!-- <input type="number" name="input-year" min="1970" v-on:input="genCalendarAndLoadEvents" v-model="year" placeholder="year"> -->
-          <span>{{abreviation()}}</span>    
+          <div class="mini-display" v-if="visualizeMonthDisplay">
+            <MiniDisplay  
+            v-on:closeDisplay="closeDisplay" 
+            v-on:upActual="upActual"
+            v-on:downActual="downActual"
+            v-bind:actualOperator="abreviation()"
+            v-bind:usedForYearOrMonth="'month'"/>
+          </div>
+          <span @click="showDisplayMonth()">{{abreviation()}}</span>    
         </div>
         <div class="calendar-header-input-area">
-          <!-- <input type="number" name="input-month" min="1" v-on:input="genCalendarAndLoadEvents" v-model="month" placeholder="month"> -->
-          <span>{{year}}</span>
+          <div class="mini-display" v-if="visualizeYearDisplay">
+            <MiniDisplay  
+            v-on:closeDisplay="closeDisplay" 
+            v-on:upActual="upActual"
+            v-on:downActual="downActual"
+            v-bind:actualOperator="year"
+            v-bind:usedForYearOrMonth="'year'"/>
+          </div>
+          <span @click="showDisplayYear()">{{year}}</span>
         </div>
       </div>
       <div class="calendar-body">
         <ul class="calendar-body-wrapper-headers">
-          <li class="calendar-body-wrapper-headers-days" v-for="(index,i) in daysOfWeekList" :key="i">
+          <li class="calendar-body-wrapper-headers-days" 
+          v-for="(index,i) in daysOfWeekList" :key="i">
             <span>{{daysOfWeekList[i]}}</span>
           </li>
         </ul>
         <ul class="calendar-body-wrapper-weeks">
-          <li class="calendar-body-wrapper-weeks-days" v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1"> 
-            <div class="calendar-body-wrapper-weeks-days-day" v-bind:class="{'other-month-grey':!actualMonth(index1)}">
-              <div class="calendar-body-wrapper-weeks-days-day-container" v-bind:class="{'evidence-day':evidenceday(index1)}" @click="inEvidence(index1)">
+          <li class="calendar-body-wrapper-weeks-days" 
+          v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1"> 
+            <div class="calendar-body-wrapper-weeks-days-day" 
+            v-bind:class="{'other-month-grey':!actualMonth(index1)}">
+              <div class="calendar-body-wrapper-weeks-days-day-container" 
+              v-bind:class="{'evidence-day':evidenceday(index1)}" @click="inEvidence(index1)">
                 <span>{{getActualDay(index1)}}</span>
               </div>
             </div>
@@ -37,11 +55,20 @@ import ListEvents from './ListEvents.vue';
 import Event from '@/components/Event';
 import { v4 as uuidv4 } from 'uuid';
 import {store} from '../store';
+import MiniDisplay from '@/components/MiniDisplay.vue';
+import { mapGetters } from 'vuex';
 
 export default{
   name:'Calendar',
+  components:{
+    MiniDisplay
+  },
   data(){
     return{
+      visualizeMonthDisplay:false,
+      visualizeYearDisplay:false,
+      requestMiniDisplay:false,
+      usedForYearOrMonth:'',
       days:7,
       year:'',
       month:'',
@@ -78,26 +105,81 @@ export default{
       idOfListEvents:'',
       listOfEvents:{},
       arrayOfEventsForListEvents:[],
-      evidenceDayPosition:-1
+      evidenceDayPosition:-1,    
     }
   },
-  components:{
-      ListEvents
-  },
   computed:{
+    ...mapGetters(['getnewEventObj']),
+    getNewEvent(){
+      return this.getnewEventObj;
+    },
     signal(){
       return store.getters.getIdOfDragged;
     }
   },
   watch:{
+    getNewEvent(){
+      // getNewEvent ....
+    },
     arrayOfEventsForListEvents(){
       store.commit('setlistOfListOfEvents',this.arrayOfEventsForListEvents);
+    },
+    year(){
+      if(this.year <= 1969 ){
+        this.year = 1970;
+      }
+    },
+    month(){
+      if(this.month <= 0){
+        this.month = 12;
+      }
+      if(this.month>12){
+        this.month = 1;
+      }
     }
   },
   methods: {
+    upActual(param){
+      if((param) == 'month'){
+        this.month++;
+      }else{
+        this.year++;
+      }
+    },
+    downActual(param){
+      if((param) == 'month'){
+        this.month--;
+      }else{
+        this.year--;
+      }
+    },
+    closeDisplay(param){
+      this.genCalendarAndLoadEvents();
+      this.showMiniDisplay(param);
+    },
+    showDisplayYear(){
+      this.used = "year";
+      return this.showMiniDisplay('year');  
+    },
+    showDisplayMonth(){
+      this.used = "month";
+      return this.showMiniDisplay('month');  
+    },
+    showMiniDisplay(actualDisplay){
+      if(actualDisplay === 'year'){
+        this.visualizeYearDisplay = !this.visualizeYearDisplay;
+      }
+      if(actualDisplay === 'month'){
+        this.visualizeMonthDisplay = !this.visualizeMonthDisplay;
+      }
+      else{
+        return ;
+      }
+    },
     inEvidence(index){
       const actual = index + 1;
-      if(!(index < this.offsetDaysOfMonth || !(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth)))){
+      const ItsActualMonth = this.actualMonth(index);
+      if((ItsActualMonth)){ // Is valid day
         this.evidenceDayPosition = (actual - this.offsetDaysOfMonth); 
       } 
     },
@@ -211,27 +293,28 @@ export default{
         return {};
       }
     },
-    createEvent(){
+    $_createEvent(description,title,dateSchedule,fullDescriptionSchedule){
       const idGenerated = uuidv4();
       return{
         "id":idGenerated,
-        "title":this.newTitle,
-        "description":this.newContent,
-        "hour":this.newDeadLine
+        "title":title,
+        "description":description,
+        "scheduleDay":dateSchedule,
+        "fullSchedule":{fullDescriptionSchedule}
         };
     },
-    validateFields(){
-      if(this.newTitle !== '' && this.newContent !== ''){
+    $_validateFields(title,description){
+      if(title !== '' && description !== ''){
         return true;
       }
       else{
         return false;
       }
     },
-    validationDate(){
-      if(this.newDeadLine!==''){
+    $_validationDate(dateSchedule){
+      if(dateSchedule!==''){
         const actualDate = new Date();
-        const newDeadLineDate = new Date(this.newDeadLine);
+        const newDeadLineDate = new Date(dateSchedule);
         if((newDeadLineDate.getUTCMonth()) === (actualDate.getUTCMonth()) &&
       (newDeadLineDate.getUTCFullYear()) === (actualDate.getUTCFullYear())){
           return true;
@@ -274,17 +357,17 @@ export default{
       const day = this.createObjKeyIfNotExist(this.listOfEvents,option);
       day[idEvent] = event; // added event in the object listEvents
     },
-    newEvent(){
-      if(!this.validateFields()){ return ; } // contain the fields empty
-      if(!this.validationDate()){ // change the calendar to the month and year of the event that is beeing added.
-        const dateStr = this.newDeadLine.split("-");
+    newEvent(description,title,dateSchedule,fullDescriptionSchedule){
+      if(!this.$_validateFields(description,title)){ return ; } // contain the fields empty
+      if(!this.$_validationDate(dateSchedule)){ // change the calendar to the month and year of the event that is beeing added.
+        const dateStr = dateSchedule.split("-");
         this.year = Number(dateStr[0]);
         this.month = Number(dateStr[1]);
         this.genCalendar(); // Change the calendar to other month
       }
-      const arrEvent = this.createEvent(); // contains obj Event
+      const arrEvent = this.$_createEvent(description,title,dateSchedule,fullDescriptionSchedule); // contains obj Event
       const idEvent = arrEvent["id"];
-      const dateStr = this.newDeadLine.split("-");
+      const dateStr = dateSchedule.split("-");
       this.setNewEventInlistOfEvents(dateStr,arrEvent,idEvent);
       this.setEventsForListEvents();
     },
@@ -307,9 +390,6 @@ export default{
           return false;
         }
       }
-    },
-    isNotCorner(actualIndex){
-      return (actualIndex == 0) || !(actualIndex % 7==0);
     },
     getTheSizeOfListOfDays(){
       // Uses the offset of first day of month and the lenght of month,and aproximate to number of days of weeks
@@ -381,9 +461,8 @@ export default{
 </script>
 
 <style lang='scss'>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
   @import '../style/modulos.scss','../style/Calendar_Style.scss';
-  *,body,html{
+  *{
     margin:0 0;
     padding: 0 0;
     box-sizing:border-box;

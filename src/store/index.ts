@@ -7,7 +7,16 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     listOfListOfEvents:[],
-    idOfDragged:""
+    idOfDragged:"",
+    actualDate:{
+      day:'20',
+      month:'JULY',
+      year:'1970'
+    },
+    paramToMiniDisplay:0,
+    actualYear:'',
+    actualMonth:'',
+    newEventObj:''
     // objDragged:{},
     // eventTriggered:false,
     // idParent:'',
@@ -28,11 +37,26 @@ export const store = new Vuex.Store({
     // idTrigCloseBigView:false,
   },
   mutations:{
+    setNewEventObj(state,newEvent){
+      state.newEventObj = newEvent;
+    },
     setlistOfListOfEvents(state,newList){
       state.listOfListOfEvents = newList;
     },
     setDraggedEvent(state,eventDragged){
       state.idOfDragged = eventDragged;
+    },
+    setActualDate(state,newDate){
+      state.actualDate = newDate;
+    },
+    setParamToMiniDisplay(state,newParam){
+      state.paramToMiniDisplay = newParam;
+    },
+    setActualYear(state,newYear){
+      state.actualYear = newYear
+    },
+    setActualMonth(state,newMonth){
+      state.actualMonth = newMonth;
     }
     // setTrigerCloseBigView(state){
     //   state.idTrigCloseBigView = !state.idTrigCloseBigView;
@@ -84,8 +108,13 @@ export const store = new Vuex.Store({
   actions: {
   },
   getters:{
+    getnewEventObj : (state) => {return state.newEventObj;},
     getlistOfListOfEvents: (state) => {return state.listOfListOfEvents;},
-    getIdOfDragged : (state) =>{return state.idOfDragged;}
+    getIdOfDragged : (state) =>{return state.idOfDragged;},
+    getActualDate : (state) => {return state.actualDate;},
+    getParamToMiniDisplay: (state) =>{return state.paramToMiniDisplay;},
+    getActualYear: (state) =>{return state.actualYear;},
+    getActualMonth: (state) =>{return state.actualMonth;}
     // getIdTrigCloseBigView : (state) => {return state.idTrigCloseBigView},
     // getIdCloseBigView : (state) =>{return state.idEventCloseBigView;},
     // getIdTrigger:(state) => {return state.idTrigger;},

@@ -6,10 +6,9 @@
       </div>
     </div>
   </div>
-
 </template>
+
 <script>
-import eventImg from '../img/icon1.svg';
 import {store} from '../store';
 
 export default {
@@ -37,14 +36,6 @@ export default {
         e.preventDefault();
         console.log(e);
         e.target.className = 'event';
-        // const lastParent = this.idParent;
-        // const newParent = _this.$refs.eventObj.parentNode.id;
-        // this.idParent = _this.$refs.eventObj.parentNode.id;
-        // const allKeysValues = store.getters.getKeyEventValueListEvent;
-        // store.commit('setIdLastParent',store.getters.getKeyEventValueListEvent[this.id.split("id-")[1]]);
-        // store.commit('setIdNewParent',newParent);
-        // store.commit('setObjDropped',[this.id.split("id-")[1]]);
-        // store.commit('trigRequiredTransfer');
       });
     },
     createId(){
@@ -59,7 +50,6 @@ export default {
 </script>
 
 <style lang="scss">
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
   @import '../style/_modulos.scss', '../style/_configs.scss';
 
   html,*,body{

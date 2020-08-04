@@ -53,9 +53,9 @@ export default {
                     return this.actualDisplayOperator;
                 }
                 if(this.usedFor == "month"){
-                    this.actualDisplayOperator = this.setInput[this.firstOptionSet]; 
+                    this.actualDisplayOperator = this.firstOptionSet; 
                     this.actualposition = this.firstOptionSet;
-                    return (this.actualDisplayOperator).substring(0,3);
+                    return this.actualDisplayOperator;
                 }
                 if(this.usedFor == "day"){
                     this.actualDisplayOperator = this.setInput[0] + (this.firstOptionSet - 1);
@@ -73,8 +73,8 @@ export default {
                 return this.actualDisplayOperator; 
             }
             if(this.usedFor == "month"){
-                this.actualDisplayOperator = this.setInput[this.actualposition];
-                return this.actualDisplayOperator.substring(0,3);
+                this.actualDisplayOperator = this.actualposition;
+                return this.actualDisplayOperator;
             }
             if(this.usedFor == "day"){
                 this.actualDisplayOperator = this.setInput[0] + (this.actualposition - 1);

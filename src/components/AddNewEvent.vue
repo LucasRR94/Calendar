@@ -23,14 +23,14 @@
               <label for="Year">Year</label>  
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-button">
-              <button @click="activeYear()">{{finalOption.year}}</button>
+              <button @click="activeYear()">{{finalChooseOptionTime.year}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="yearChooseActive">
               <MiniDisplayAddNewEvent 
               v-bind:setInput="getSetYear()"
               v-bind:usedFor="'year'"
               v-bind:firstOptionSet="getFirstOptionYear()"
-              v-on:finishChoose="setFinalOptions($event)"
+              v-on:finishChoose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -40,14 +40,14 @@
               <label for="Year">Month</label>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-button">
-              <button @click="activeMonth()">{{finalOption.month}}</button>
+              <button @click="activeMonth()">{{monthDisplay}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="monthChooseActive">
               <MiniDisplayAddNewEvent 
               v-bind:setInput="getSetMonth()"
               v-bind:usedFor="'month'"
               v-bind:firstOptionSet="getFirstOptionMonth()"
-              v-on:finishChoose="setFinalOptions($event)"
+              v-on:finishChoose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -56,14 +56,14 @@
               <label for="Year">Day</label>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-button">
-              <button @click="activeDay()">{{finalOption.day}}</button>
+              <button @click="activeDay()">{{finalChooseOptionTime.day}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="dayChooseActive">
               <MiniDisplayAddNewEvent 
               v-bind:setInput="getSetDay()"
               v-bind:usedFor="'day'"
               v-bind:firstOptionSet="getFirstOptionDay()"
-              v-on:finishChoose="setFinalOptions($event)"
+              v-on:finishChoose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -72,14 +72,14 @@
               <label for="Year">Hour</label>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-button">
-              <button @click="activeHour()">{{finalOption.hour}}</button>
+              <button @click="activeHour()">{{finalChooseOptionTime.hour}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="hourChooseActive">
               <MiniDisplayAddNewEvent 
               v-bind:setInput="getSetHour()"
               v-bind:usedFor="'hour'"
               v-bind:firstOptionSet="0"
-              v-on:finishChoose="setFinalOptions($event)"
+              v-on:finishChoose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -88,14 +88,14 @@
               <label for="Year">Minute</label>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-button">
-              <button @click="activeMinute()">{{finalOption.minute}}</button>
+              <button @click="activeMinute()">{{finalChooseOptionTime.minute}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="minuteChooseActive">
               <MiniDisplayAddNewEvent 
               v-bind:setInput="getSetMinute()"
               v-bind:usedFor="'minute'"
               v-bind:firstOptionSet="0"
-              v-on:finishChoose="setFinalOptions($event)"
+              v-on:finishChoose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -153,12 +153,24 @@ export default {
         month:"",
         day:""
       },
-      finalOption:{
+      finalChooseOptionTime:{
         year:"",
         month:"",
         day:"",
         hour:"",
         minute:""
+      }
+    }
+  },
+  computed:{
+    monthDisplay(){
+      let monthDisplayed = ''
+      try{monthDisplayed = this.setMonthExplicit[this.finalChooseOptionTime.month].substring(0,3);}
+      catch(err){
+        monthDisplayed='';
+      }
+      finally{
+        return monthDisplayed;
       }
     }
   },
@@ -171,11 +183,11 @@ export default {
         return ;
       }
     },
-    setFinalOptions(arg1){
+    setfinalChooseOptionTimes(arg1){
       const actualOperator = arg1[0];
       const option = arg1[1];
       try{
-        this.finalOption[option] = actualOperator;
+        this.finalChooseOptionTime[option] = actualOperator;
       }
       catch(err){
         throw "Error, key doesn't exist in the object ... "
@@ -243,7 +255,10 @@ export default {
     },
     addNewEvent(){
       if(this.$_validateFields){
-        const newEvent = this.finalOption;
+        const newEvent = {};
+        newEvent["description"] = this.description;
+        newEvent["title"] = this.title;
+        newEvent["time"] = this.finalChooseOptionTime;
         store.commit('setNewEventObj',newEvent);
       }
     },
@@ -438,7 +453,7 @@ export default {
           justify-content: center;
           align-items: center;
           h2{
-            font-size:32px;
+            font-size:36px;
             font-weight: 300;
             color:#ffffff; 
           }
@@ -449,38 +464,38 @@ export default {
       }
     }
   .form-input{
-          display:flex;
-          flex:1;
-          flex-direction: column;
-          justify-content: center;
-          align-self:center;
-          width:92%;
-          font-size:22px;
-          label{
-            color:#ffffff;
-          }
-          input{
-            padding:.4rem;
-            font-size:24px;
-            margin-top:.4rem;
-            color:#000000;
-            border-radius:.2rem;
-            border:none;
-            outline:none;
-          }
-          textarea{
-            align-self: center;
-            justify-self: center;
-            width:98%;
-            max-width:98%;
-            max-height:200px;
-            padding:.4rem;
-            font-size:24px;
-            margin-top:.4rem;
-            color:#000000;
-            border-radius:.2rem;
-            border:none;
-            outline:none;
-          }
+    display:flex;
+    flex:1;
+    flex-direction: column;
+    justify-content: center;
+    align-self:center;
+    width:92%;
+    font-size:22px;
+    label{
+      color:#ffffff;
+    }
+    input{
+      padding:.4rem;
+      font-size:24px;
+      margin-top:.4rem;
+      color:#000000;
+      border-radius:.2rem;
+      border:none;
+      outline:none;
+    }
+    textarea{
+      align-self: center;
+      justify-self: center;
+      width:98%;
+      max-width:98%;
+      max-height:200px;
+      padding:.4rem;
+      font-size:24px;
+      margin-top:.4rem;
+      color:#000000;
+      border-radius:.2rem;
+      border:none;
+      outline:none;
+    }
   }
 </style>

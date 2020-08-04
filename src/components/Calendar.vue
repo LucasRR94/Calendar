@@ -115,11 +115,22 @@ export default{
     },
     signal(){
       return store.getters.getIdOfDragged;
+    },
+    setActualEvent(){
+      if(this.evidenceDayPosition !== -1){
+        return this.arrayOfEventsForListEvents[this.evidenceDayPosition];
+      }
     }
   },
   watch:{
+    setActualEvent(){
+      return store.commit('setListOfEventsEvidenceDay',this.setActualEvent);
+    },
     getNewEvent(){
-      // getNewEvent ....
+      const objNewEvent = this.getNewEvent;
+      const dateString = `${objNewEvent['time']['year']}-${objNewEvent['time']['month']}-${objNewEvent['time']['day']}`;
+      this.newEvent(objNewEvent['description'],objNewEvent['title'],dateString,objNewEvent['time']);
+      return;
     },
     arrayOfEventsForListEvents(){
       store.commit('setlistOfListOfEvents',this.arrayOfEventsForListEvents);
@@ -300,7 +311,11 @@ export default{
         "title":title,
         "description":description,
         "scheduleDay":dateSchedule,
-        "fullSchedule":{fullDescriptionSchedule}
+        "year":fullDescriptionSchedule["year"],
+        "month":fullDescriptionSchedule["month"],
+        "day":fullDescriptionSchedule["day"],
+        "hour":fullDescriptionSchedule["hour"],
+        "minute":fullDescriptionSchedule["minute"]
         };
     },
     $_validateFields(title,description){
@@ -407,10 +422,11 @@ export default{
       }
       return false;
     },
-    setInitualValueYearMonth(){
+    setInitualValueYearMonthDay(){
       const obj = new Date;
       this.month = (Number(obj.getUTCMonth())+1);
       this.year = obj.getUTCFullYear();
+      this.evidenceDayPosition = Number(obj.getDate());
     },
     genCalendar(){
       const lastMonth = () => {
@@ -453,7 +469,7 @@ export default{
     }
   },
   mounted(){
-    this.setInitualValueYearMonth();
+    this.setInitualValueYearMonthDay();
     this.genCalendar();
     this.setEventsForListEvents();
   }

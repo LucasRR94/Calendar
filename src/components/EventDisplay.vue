@@ -4,13 +4,76 @@
           <div class="event-display-wrapper-title">
             <h2>List Events</h2> 
           </div>  
+          <div class="event-display-wrapper-list-events">
+              <ul class="event-display-wrapper-list-events-list">
+                  <li class="event-display-wrapper-list-events-list-container-event" 
+                  v-for="actual in objArray" :key="actual.id">
+                      <DisplayEventDisplay v-bind:event="actual"/>
+                  </li>
+              </ul>
+          </div>
       </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import {store} from '../store';
+import DisplayEventDisplay from '@/components/DisplayEventDisplay.vue';
+
 export default {
-    name:'EventDisplay'
+    name:'EventDisplay',
+    components:{DisplayEventDisplay},
+    data(){
+        return{
+            listEvents:[]
+        }
+    },
+    computed:{
+        ...mapGetters(['getlistOfEventsEvidenceDay']),
+        getListEvents(){
+            return this.getlistOfEventsEvidenceDay;
+        },
+        objArray(){
+            if(Object.keys(this.getListEvents).length > 0 && this.getListEvents != undefined){
+                let finalArr = [];
+                for(let actual in this.getListEvents){
+                    finalArr.push(this.getListEvents[actual]);
+                }
+                return this.sortArr(finalArr);
+            }
+            else {
+                return ;
+            }
+            
+        }
+ 
+    },
+    methods:{
+        sortArr(arr){
+            const list = arr.sort((op1,op2) =>{
+                if(op1.hour > op2.hour){
+                    return 1;
+                }
+                if(op1.hour == op2.hour){
+                    if(op1.minute > op2.minute ){
+                        return 1;
+                    }
+                    if(op1.minute < op2.minute ){
+                        return -1;
+                    }
+                    else{
+                        return 0;
+                    }
+                }
+                else{
+                    return -1;
+                }
+            });
+            return list;
+        }
+    }
+
 }
 </script>
 
@@ -25,22 +88,45 @@ export default {
     
     .event-display{
         width:100%;
-        height:400px;
+        min-height:400px;
+        height:auto;
         &-wrapper{
             width:100%;
-            height:70px;
+            height:auto;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             &-title{
                 width:200px;
-                height:auto;
+                height:70px;
                 display:flex;
                 justify-content: center;
+                align-items:center;
+                padding-top:.4rem;
                 h2{
                     font-weight: 300;
-                    font-size:32px;
+                    font-size:36px;
                     color:white;
+                }
+            }
+            &-list-events{
+                padding-top:.4rem;
+                width:100%;
+                height:auto;
+                min-height: 200px;
+                list-style-type: none;
+                &-list{
+                    width:auto;
+                    height:auto;
+                    display:flex;
+                    justify-content: row;
+                    align-items:center;
+                    flex-direction: column;
+                    flex:1;
+                    &-container-event{
+                        width:100%;
+                        margin-top:.2rem;    
+                    }
                 }
             }
             

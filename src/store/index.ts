@@ -16,7 +16,8 @@ export const store = new Vuex.Store({
     paramToMiniDisplay:0,
     actualYear:'',
     actualMonth:'',
-    newEventObj:''
+    newEventObj:'',
+    listOfEventsEvidenceDay:[]
     // objDragged:{},
     // eventTriggered:false,
     // idParent:'',
@@ -57,6 +58,9 @@ export const store = new Vuex.Store({
     },
     setActualMonth(state,newMonth){
       state.actualMonth = newMonth;
+    },
+    setListOfEventsEvidenceDay(state,list){
+      state.listOfEventsEvidenceDay = list;
     }
     // setTrigerCloseBigView(state){
     //   state.idTrigCloseBigView = !state.idTrigCloseBigView;
@@ -108,6 +112,7 @@ export const store = new Vuex.Store({
   actions: {
   },
   getters:{
+    getlistOfEventsEvidenceDay : (state) =>{return state.listOfEventsEvidenceDay},
     getnewEventObj : (state) => {return state.newEventObj;},
     getlistOfListOfEvents: (state) => {return state.listOfListOfEvents;},
     getIdOfDragged : (state) =>{return state.idOfDragged;},

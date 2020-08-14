@@ -17,6 +17,19 @@
           </div>    
       </div>
       <section class="display-event-full-view" v-else>
+            <div class="display-event-full-view-option" v-if="optionActive">
+                <div class="display-event-full-view-option-modify-wrapper" v-if="optionModify">
+                    
+                </div>
+                <div class="display-event-full-view-option-delete-wrapper" v-if="optionDelete">
+
+                </div>
+                <div class="display-event-full-view-option-date-modify-wrapper" v-if="optionDateModify">
+                    <ModifyDate 
+                    :hour="hourArrToModifyDate"
+                    :date="DateArrToModifyDate" />
+                </div>
+            </div>
           <div class="display-event-full-view-wrapper">
               <div class="display-event-full-view-wrapper-title-btn-miniview">
                 <div class="display-event-full-view-wrapper-title-btn-miniview-title">
@@ -43,7 +56,23 @@
                 </div>
                 <div class="display-event-full-view-wrapper-reminder-btns-options-reminder">
                     <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn">
-                        <button></button>
+                        <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container">
+                            <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu" v-if="HamburgerMenuCardEventActive">
+                                <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
+                                    <button @click="modifyDate()"></button>
+                                </div>
+                                <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
+                                    <button @click="delEvent()"></button>
+                                </div>
+                                <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
+                                    <button @click="editEvent()"></button>
+                                </div>
+                                <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
+                                    <button @click="trigMenuHamburguerCard()"></button>
+                                </div>
+                            </div>
+                            <button @click="trigMenuHamburguerCard()" v-else></button>
+                        </div>
                     </div>
                 </div>
               </div>
@@ -53,15 +82,29 @@
 </template>
 
 <script>
+import ModifyDate from './ModifyDate.vue';
+
 export default {
     name:"DisplayEventDisplay",
     props:['event'],
+    components:{ModifyDate},
     data(){
         return{
-            smallView:true
+            HamburgerMenuCardEventActive:false,
+            smallView:true,
+            optionActive:true,
+            optionModify:false,
+            optionDelete:false,
+            optionDateModify:true // Actual working in ...
         }
     },
     computed:{
+        DateArrToModifyDate(){
+            return `${this.event['scheduleDay']}`;
+        },
+        hourArrToModifyDate(){
+            return `${this.event['hour']}:${this.event['minute']}`;
+        },
         titleMiniview(){
             const titleStr  = this.event['title'];
             if(titleStr.length > 16){
@@ -82,6 +125,18 @@ export default {
         }
     },
     methods:{
+        modifyDate(){
+
+        },
+        delEvent(){
+
+        },
+        editEvent(){
+            
+        },
+        trigMenuHamburguerCard(){
+            this.HamburgerMenuCardEventActive = ! this.HamburgerMenuCardEventActive;
+        },
         formatOperatorTwoDigits(operator){
             if(String(operator).length ==1){
                 return `0${operator}`;
@@ -111,7 +166,7 @@ export default {
     .display-event{
         width:100%;
         height:auto;
-        min-height:50px;
+        min-height:500px;
         &-miniview{
             border:1px solid #ffffff; 
             height:50px;
@@ -171,25 +226,27 @@ export default {
         }
         &-full-view{
             width:100%;
-            height:auto;
             height:300px;
-            border-radius: .4rem .4rem .4rem .4rem;
-            background: $background-color-full-event-display;
             display:flex;
-            justify-content: flex-end;
+            flex-direction: row;
+            justify-content: center;
             &-wrapper{
-                width:95%;
+                border:2px solid red;
+                border-radius:.2rem;
+                width:90%;
                 height:auto;
                 min-height: inherit;
                 display:flex;
                 flex-direction: column;
+                background: $background-color-full-event-display;
                 &-title-btn-miniview{
                     flex:.1;
                     min-height:82px;
                     height:auto;
-                    width:100%;
+                    width:90%;
                     display:flex;
                     flex-direction: row;
+                    align-self: center;
                     &-title{
                         padding-top:1rem;
                         flex:.98;
@@ -233,6 +290,7 @@ export default {
                                 border:none;    
                                 outline:none;
                             }
+                            
                         }
                         
                     }
@@ -240,11 +298,13 @@ export default {
                 &-main-content{
                     flex:.7;
                     height:100%;
+                    display:flex;
+                    flex-direction: row;
+                    justify-content: center;
                     &-wrapper{
-                        margin-right:1.6rem;
                         padding: .4rem .4rem .4rem 0;
                         height:100%;
-                        // border:2px solid blue;
+                        width:90%;
                         p{
                             padding:.2rem .2rem .2rem 0;
                             border-radius: .4rem;
@@ -260,17 +320,19 @@ export default {
                     }
                 }
                 &-reminder-btns-options{
+                    align-self:center;
                     flex:.2;
                     display:flex;
                     flex-direction: row;
                     justify-content: center;
+                    width:90%;
+                    // position:relative;
                     &-reminder{
                         flex:1;
                         display:flex;
                         flex-direction:row;
                         width:30%;
                         &-wrapper{
-                            // border:1px solid white;
                             color:#ffffff;
                             width:auto;
                             display:flex;
@@ -287,22 +349,96 @@ export default {
                             flex-direction:row;
                             align-items: center;
                             justify-content:flex-end;
-                            padding-right:.5rem;
-                            button{
-                                width:30px;
-                                height:30px;
-                                color:none;
-                                background: none;
-                                border:none;
-                                background-image:url('../img/button-menu-event-up.png');
-                                background-repeat: no-repeat;
-                                background-position:100% 5%;            
-                                background-size: 30px 25px;
+                            // border:2px solid red;
+                            &-container{
+                                border:2px solid #212121;
+                                width:50px;
+                                height:50px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                position:relative;
+                                button{
+                                    margin-top:6px;
+                                    justify-self:center;
+                                    width:35px;
+                                    height:30px;
+                                    color:none;
+                                    background: none;
+                                    border:none;
+                                    outline:none;
+                                    background-image:url('../img/button-menu-event-up.png');
+                                    background-repeat: no-repeat;
+                                    background-position:100% 5%;            
+                                    background-size: 35px 28px;
+                                }
+                                &-menu{
+                                    background: #bdbdbdbd;
+                                    width:42px;
+                                    height:208px;
+                                    border-radius:.4rem;
+                                    display:flex;
+                                    flex-direction: column;
+                                    align-items:center;
+                                    justify-content: flex-end;
+                                    position:absolute;
+                                    bottom:0;
+                                    &-wrapper-btn{
+                                        margin-top:.2rem;
+                                        flex:1;
+                                        display: flex;
+                                        flex-direction:row;
+                                        justify-content: flex-end;
+                                        align-items: center;
+                                        button{
+                                            width:35px;
+                                            height:35px;
+                                            color:none;
+                                            background: none;
+                                            border:none;
+                                            outline:none;
+                                            background-repeat: no-repeat;
+                                            background-position:100% 5%;            
+                                            background-size: 35px 35px;
+                                            
+                                        }
+                                        &:first-child button{
+                                                background-image:url('../img/Icon-Change-Day-Event.png');
+                                        }
+                                        &:nth-child(2) button{
+                                            background-image:url('../img/Icon-Del-Event.png');
+                                        }
+                                        &:nth-child(3) button{
+                                            background-image:url('../img/Icon-Modify-Event.png');
+                                        }
+                                        &:nth-child(4){ 
+                                            button{
+                                                background-size: 35px 28px;
+                                                background-image:url('../img/button-menu-event-up.png');
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                            
                         }
                     }
                 }
             }
+            &-option{
+                z-index:2;
+                justify-self: center;
+                position:absolute;
+                width:90%;
+                min-height:300px;
+                background: rgba($color: #494949, $alpha: .5);
+                &-modify-wrapper{
+                    width:100%;
+                    height:100%;
+                    background: #212121;
+                }
+            }
+            
         }
     }
 </style>

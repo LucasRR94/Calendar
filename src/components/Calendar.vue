@@ -103,7 +103,26 @@ export default{
       lightMode:true,
       objEvent:[],
       idOfListEvents:'',
-      listOfEvents:{},
+      listOfEvents:{
+        2020:{
+          8:{
+            14:{
+              "fe8cb88f-5846-40bf-8ef2-749b1e12f37d":{
+                day: "04",
+                description: "TEST TEST TEST",
+                hour: "5",
+                id: "fe8cb88f-5846-40bf-8ef2-749b1e12f37d",
+                minute: "05",
+                month: "04",
+                scheduleDay: "2020-08-04",
+                title: "Something",
+                year: "2020"
+              }
+            }
+          }
+        }
+
+      },
       arrayOfEventsForListEvents:[],
       evidenceDayPosition:-1,    
     }

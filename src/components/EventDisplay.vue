@@ -7,8 +7,9 @@
           <div class="event-display-wrapper-list-events">
               <ul class="event-display-wrapper-list-events-list">
                   <li class="event-display-wrapper-list-events-list-container-event" 
-                  v-for="actual in objArray" :key="actual.id">
-                      <DisplayEventDisplay v-bind:event="actual"/>
+                  v-for="actual in objArray" 
+                  :key="actual.id">
+                    <DisplayEventDisplay v-bind:event="actual"/>
                   </li>
               </ul>
           </div>
@@ -35,15 +36,22 @@ export default {
             return this.getlistOfEventsEvidenceDay;
         },
         objArray(){
-            if(Object.keys(this.getListEvents).length > 0 && this.getListEvents != undefined){
-                let finalArr = [];
-                for(let actual in this.getListEvents){
-                    finalArr.push(this.getListEvents[actual]);
+            if(this.getListEvents != undefined){
+                if(Object.keys(this.getListEvents).length > 0){
+                    let finalArr = [];
+                    for(let actual in this.getListEvents){
+                        if(finalArr !== undefined || finalArr !== null){
+                            finalArr.push(this.getListEvents[actual]);
+                        }
+                    }
+                    return this.sortArr(finalArr);
                 }
-                return this.sortArr(finalArr);
+                else{
+                    return [];
+                }
             }
             else {
-                return ;
+                return [];
             }
             
         }
@@ -51,26 +59,38 @@ export default {
     },
     methods:{
         sortArr(arr){
-            const list = arr.sort((op1,op2) =>{
-                if(op1.hour > op2.hour){
-                    return 1;
+            let list = {};
+            try{
+                if(arr == undefined){
+                    return [];
                 }
-                if(op1.hour == op2.hour){
-                    if(op1.minute > op2.minute ){
+                list = arr.sort((op1,op2) =>{
+                    if(op1.hour > op2.hour){
                         return 1;
                     }
-                    if(op1.minute < op2.minute ){
-                        return -1;
+                    if(op1.hour == op2.hour){
+                        if(op1.minute > op2.minute ){
+                            return 1;
+                        }
+                        if(op1.minute < op2.minute ){
+                            return -1;
+                        }
+                        else{
+                            return 0;
+                        }
                     }
                     else{
-                        return 0;
+                        return -1;
                     }
-                }
-                else{
-                    return -1;
-                }
-            });
-            return list;
+                });
+            }
+            catch(err){
+                list = {};
+            }
+            finally{
+                return list;
+            }
+            
         }
     }
 

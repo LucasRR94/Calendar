@@ -95,6 +95,7 @@ export default {
                         color:#ffffff;
                         border-radius: .7rem;
                         max-width: 150px;
+                        outline:none;
                     }
                 }
             }

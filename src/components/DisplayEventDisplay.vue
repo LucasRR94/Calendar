@@ -26,8 +26,11 @@
                 </div>
                 <div class="display-event-full-view-option-date-modify-wrapper" v-if="optionDateModify">
                     <ModifyDate 
-                    :hour="hourArrToModifyDate"
-                    :date="DateArrToModifyDate" />
+                    :hour="hourFormated"
+                    :date="dateFormated" 
+                    v-on:closeWindow="closeOptionModify()"
+                    v-on:updateDate="updateDateHour($event)"
+                    />
                 </div>
             </div>
           <div class="display-event-full-view-wrapper">
@@ -99,10 +102,10 @@ export default {
         }
     },
     computed:{
-        DateArrToModifyDate(){
+        dateFormated(){
             return `${this.event['scheduleDay']}`;
         },
-        hourArrToModifyDate(){
+        hourFormated(){
             return `${this.event['hour']}:${this.event['minute']}`;
         },
         titleMiniview(){
@@ -125,6 +128,18 @@ export default {
         }
     },
     methods:{
+        updateDateHour(updateDateOrHour){
+            console.log(updateDateOrHour);
+            this.closeOptionModify();
+        },
+        closeOptionModify(){ //close all options opened
+            if(this.optionActive){
+                this.optionActive=false;
+                this.optionModify=false;
+                this.optionDelete=false;
+                this.optionDateModify=false;
+            }
+        },
         modifyDate(){
 
         },
@@ -231,7 +246,6 @@ export default {
             flex-direction: row;
             justify-content: center;
             &-wrapper{
-                border:2px solid red;
                 border-radius:.2rem;
                 width:90%;
                 height:auto;
@@ -431,7 +445,7 @@ export default {
                 position:absolute;
                 width:90%;
                 min-height:300px;
-                background: rgba($color: #494949, $alpha: .5);
+                // background: rgba($color: #494949, $alpha: .5);
                 &-modify-wrapper{
                     width:100%;
                     height:100%;

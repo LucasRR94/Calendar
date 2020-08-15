@@ -24,10 +24,10 @@
             </div>
             <div class="modify-date-wrapper-wrapper-btns">
                 <div class="modify-date-wrapper-wrapper-btns-wrapper-btn">
-                    <button @click="cancelUpdate()" ></button>
+                    <button @click="cancelUpdate" ></button>
                 </div>
                 <div class="modify-date-wrapper-wrapper-btns-wrapper-btn">
-                    <button @click="updating()"></button>
+                    <button @click="updating"></button>
                 </div>
             </div>
         </div>
@@ -70,10 +70,81 @@ export default {
             }
         },
         cancelUpdate(){
-            this.emit('closeWindow');
+            this.$emit('closeWindow');
+        },
+        validateString(param){
+            return(typeof(param)==='string');
+        },
+        validateNumberDifferentNaN(subpartIsNumber){
+            const toIntSubPart = parseInt(subpartIsNumber);
+            if(toIntSubPart === 'NaN'){
+                return false;
+            }
+            return true;
+        },
+        validateDate(date){
+            const partDate = date.split("-");
+            if(partDate.length !== 3 || !this.validateString(date)){
+                return false;
+            }
+            else{
+                let checkIfIsDate=true;
+                partDate.forEach((element,index) => {
+                    if(!this.validateNumberDifferentNaN(element)){ // can't be convert
+                        checkIfIsDate = false;   
+                    }
+                    else{
+                        const numbDate = parseInt(element);
+                        if(index == 0 && numbDate < 1970){
+                            checkIfIsDate = false;   
+                        }else{
+                            if(index == 1 && (numbDate > 13 || numbDate <= 0)){
+                                checkIfIsDate = false;   
+                            }
+                            if(index == 2 && (numbDate > 32 || numbDate <= 0)){
+                                checkIfIsDate = false;   
+                            }
+                        }
+                        
+                    }
+                });
+                return checkIfIsDate;
+            }
+        },
+        validateHour(hour){
+            const partHour = hour.split(":");
+            if(partHour.length !== 2 || !this.validateString(hour)){
+                return false;
+            }
+            else{
+                let checkIfIsHour = true;
+                partHour.forEach((element,index) => {
+                    if(!this.validateNumberDifferentNaN(element)){// can't be convert
+                        checkIfIsHour=false;
+                    }
+                    else{
+                        const numbHour = parseInt(element);
+                        if(index === 0 && (numbHour>=24 || numbHour<0)){
+                            checkIfIsHour=false;
+                        }
+                        if(index === 1 && (numbHour > 60 || numbHour<0)){
+                            checkIfIsHour=false;
+                        }
+                    } 
+                });
+                return checkIfIsHour;
+            }
         },
         updating(){
-            this.emit('updateDate',[this.valueDate,this.valueHour]);
+            let finalHour = "XX:XX";
+            let finalDate = "XXXX-XX-XX";
+            if(this.validateHour(this.valueHour)){
+                finalHour = this.valueHour;
+            }
+            if(this.validateDate(this.valueDate)){
+                finalDate = this.valueDate;
+            }
+            return this.$emit('updateDate',[finalDate,finalHour]);
         }
     }
     

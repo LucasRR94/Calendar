@@ -25,7 +25,7 @@
 
                 </div>
                 <div class="display-event-full-view-option-date-modify-wrapper" v-if="optionDateModify">
-                    <ModifyDate 
+                    <ModifyDateHour 
                     :hour="hourFormated"
                     :date="dateFormated" 
                     v-on:closeWindow="closeOptionModify()"
@@ -62,7 +62,7 @@
                         <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container">
                             <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu" v-if="HamburgerMenuCardEventActive">
                                 <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
-                                    <button @click="modifyDate()"></button>
+                                    <button @click="ModifyDateHour()"></button>
                                 </div>
                                 <div class="display-event-full-view-wrapper-reminder-btns-options-reminder-wrapper-btn-container-menu-wrapper-btn">
                                     <button @click="delEvent()"></button>
@@ -85,20 +85,20 @@
 </template>
 
 <script>
-import ModifyDate from './ModifyDate.vue';
+import ModifyDateHour from './ModifyDateHour/ModifyDateHour.vue';
 
 export default {
-    name:"DisplayEventDisplay",
+    name:"Display",
     props:['event'],
-    components:{ModifyDate},
+    components:{ModifyDateHour},
     data(){
         return{
             HamburgerMenuCardEventActive:false,
             smallView:true,
-            optionActive:true,
+            optionActive:false,
             optionModify:false,
             optionDelete:false,
-            optionDateModify:true // Actual working in ...
+            optionDateModify:false // Actual working in ...
         }
     },
     computed:{
@@ -129,7 +129,7 @@ export default {
     },
     methods:{
         updateDateHour(updateDateOrHour){
-            console.log(updateDateOrHour);
+            store.commit('ModifyDateHourHour',[this.event,updateDateOrHour]);
             this.closeOptionModify();
         },
         closeOptionModify(){ //close all options opened
@@ -140,8 +140,10 @@ export default {
                 this.optionDateModify=false;
             }
         },
-        modifyDate(){
-
+        ModifyDateHour(){
+            this.optionActive=true;
+            this.optionDateModify=true;
+            this.HamburgerMenuCardEventActive = false;
         },
         delEvent(){
 
@@ -171,7 +173,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss' , '../style/_modulos.scss';
+    @import '../../style/_configs.scss' , '../../style/_modulos.scss';
     *{
         margin: 0 0;
         padding: 0 0;
@@ -381,7 +383,7 @@ export default {
                                     background: none;
                                     border:none;
                                     outline:none;
-                                    background-image:url('../img/button-menu-event-up.png');
+                                    background-image:url('../../img/button-menu-event-up.png');
                                     background-repeat: no-repeat;
                                     background-position:100% 5%;            
                                     background-size: 35px 28px;
@@ -417,18 +419,18 @@ export default {
                                             
                                         }
                                         &:first-child button{
-                                                background-image:url('../img/Icon-Change-Day-Event.png');
+                                                background-image:url('../../img/Icon-Change-Day-Event.png');
                                         }
                                         &:nth-child(2) button{
-                                            background-image:url('../img/Icon-Del-Event.png');
+                                            background-image:url('../../img/Icon-Del-Event.png');
                                         }
                                         &:nth-child(3) button{
-                                            background-image:url('../img/Icon-Modify-Event.png');
+                                            background-image:url('../../img/Icon-Modify-Event.png');
                                         }
                                         &:nth-child(4){ 
                                             button{
                                                 background-size: 35px 28px;
-                                                background-image:url('../img/button-menu-event-up.png');
+                                                background-image:url('../../img/button-menu-event-up.png');
                                             }
                                         }
                                     }

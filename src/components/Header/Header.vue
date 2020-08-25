@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import MiniCard from '@/components/MiniCard.vue';
+import MiniCard from './MiniCard.vue';
 
 export default {
     name:'Header',
@@ -21,7 +21,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss';
+    @import '../../style/_configs.scss';
     *{
         box-sizing:border-box;
         margin:0 0;
@@ -61,7 +61,7 @@ export default {
                     height:40px;
                     background: none;
                     border:none;
-                    background: url("../img/hamburguerMenuHeader.png") no-repeat center;
+                    background: url("../../img/hamburguerMenuHeader.png") no-repeat center;
                     background-position:100% 5%;            
                     background-size: 40px 24px;
                     outline:none;

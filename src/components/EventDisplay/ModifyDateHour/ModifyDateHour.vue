@@ -39,7 +39,7 @@
 import InputModifyDateHour from './InputModifyDateHour.vue';
 
 export default {
-    name:"ModifyDate",
+    name:"ModifyDateHour",
     components:{InputModifyDateHour},
     props:{
         date:{
@@ -152,7 +152,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/modulos.scss','../style/Calendar_Style.scss';
+    @import '../../../style/modulos.scss','../../../style/Calendar_Style.scss';
     *{
         box-sizing:border-box;
         margin:0 0;
@@ -218,13 +218,13 @@ export default {
                         border-radius: 50%;
                     }
                     &:first-child button{
-                        background-image:url('../img/btn-cancel-modify.png');
+                        background-image:url('../../../img/btn-cancel-modify.png');
                         &:active{
                             border:1px solid red;
                         }
                     }
                     &:nth-child(2) button{
-                        background-image:url('../img/btn-finish-modify.png');
+                        background-image:url('../../../img/btn-finish-modify.png');
                         &:active{
                             border:1px solid white;
                         }

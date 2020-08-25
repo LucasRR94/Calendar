@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/modulos.scss','../style/Calendar_Style.scss';
+    @import '../../../style/modulos.scss','../../../style/Calendar_Style.scss';
     *{
         box-sizing:border-box;
         margin:0 0;

@@ -9,7 +9,7 @@
                   <li class="event-display-wrapper-list-events-list-container-event" 
                   v-for="actual in objArray" 
                   :key="actual.id">
-                    <DisplayEventDisplay v-bind:event="actual"/>
+                    <Display v-bind:event="actual"/>
                   </li>
               </ul>
           </div>
@@ -19,12 +19,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import {store} from '../store';
-import DisplayEventDisplay from '@/components/DisplayEventDisplay.vue';
+import {store} from '../../store';
+import Display from './Display.vue';
 
 export default {
     name:'EventDisplay',
-    components:{DisplayEventDisplay},
+    components:{Display},
     data(){
         return{
             listEvents:[]
@@ -98,7 +98,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss' , '../style/_modulos.scss';
+    @import '../../style/_configs.scss' , '../../style/_modulos.scss';
     *{
         margin: 0 0;
         padding: 0 0;

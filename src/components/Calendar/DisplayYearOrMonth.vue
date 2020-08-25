@@ -2,13 +2,13 @@
   <div class="mini-display-component">
       <div class="mini-display-component-wrapper-choose">
         <div class="mini-display-component-wrapper-choose-container  up-button">
-           <button @click="$emit('upActual',usedForYearOrMonth)"></button>     
+           <button @click="$emit('up-actual',usedForYearOrMonth)"></button>     
         </div>    
         <div class="mini-display-component-wrapper-choose-container">
           {{actualOperator}}
         </div>
         <div class="mini-display-component-wrapper-choose-container  down-button">
-          <button @click="$emit('downActual',usedForYearOrMonth)"></button>
+          <button @click="$emit('down-actual',usedForYearOrMonth)"></button>
         </div>
       </div>
       <div class="mini-display-component-wrapper-finish">
@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import {store} from '../store';
+import {store} from '../../store';
 
 export default {
-    name:"MiniDisplay",
+    name:"DisplayYearOrMonth",
     props:{
         usedForYearOrMonth:{
             type:String,
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss';
+    @import '../../style/_configs.scss';
     * {
         margin: 0 0;
         padding: 0 0;
@@ -91,7 +91,7 @@ export default {
                 justify-content: center;
                 button{
                     border:none;
-                    background: url("../img/finish-button.png") no-repeat center;
+                    background: url("../../img/finish-button.png") no-repeat center;
                     width:50px;
                     height:40px;
                     background-position:100% 5%;            
@@ -114,7 +114,7 @@ export default {
         height:40px;
         button{
             border:none;
-            background: url("../img/up-button.png") no-repeat center;
+            background: url("../../img/up-button.png") no-repeat center;
             width:42px;
             height:25px;
             background-position:100% 5%;            
@@ -134,7 +134,7 @@ export default {
         height:40px;
         button{
             border:none;
-            background: url("../img/down-button.png") no-repeat center;
+            background: url("../../img/down-button.png") no-repeat center;
             width:42px;
             height:25px;
             background-position:100% 5%;            

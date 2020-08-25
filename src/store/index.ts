@@ -17,7 +17,8 @@ export const store = new Vuex.Store({
     actualYear:'',
     actualMonth:'',
     newEventObj:'',
-    listOfEventsEvidenceDay:[]
+    listOfEventsEvidenceDay:[],
+    modifyDateHour:[]
     // objDragged:{},
     // eventTriggered:false,
     // idParent:'',
@@ -38,6 +39,9 @@ export const store = new Vuex.Store({
     // idTrigCloseBigView:false,
   },
   mutations:{
+    setmodifyDateHour(state,arrEventHourDate){
+      state.modifyDateHour= arrEventHourDate;
+    },
     setNewEventObj(state,newEvent){
       state.newEventObj = newEvent;
     },
@@ -112,6 +116,7 @@ export const store = new Vuex.Store({
   actions: {
   },
   getters:{
+    getmodifyDateHour : (state) => {return state.modifyDateHour;},
     getlistOfEventsEvidenceDay : (state) =>{return state.listOfEventsEvidenceDay},
     getnewEventObj : (state) => {return state.newEventObj;},
     getlistOfListOfEvents: (state) => {return state.listOfListOfEvents;},

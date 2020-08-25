@@ -13,17 +13,17 @@
       </div>
       <div class="mini-display-component-wrapper-finish">
           <div class="mini-display-component-wrapper-finish-container">
-              <button @click="$emit('finishChoose',[displayActualOperator(),usedFor])"></button>
+              <button @click="$emit('finish-choose',[displayActualOperator(),usedFor])"></button>
           </div>
       </div>
   </div>
 </template>
 
 <script>
-import {store} from '../store';
+import {store} from '../../store';
 
 export default {
-    name:"MiniDisplayAddNewEvent",
+    name:"AddNewEventInput",
     data(){
         return{
             actualDisplayOperator:'',
@@ -166,7 +166,8 @@ export default {
         },
         closeDisplay(){
             return setTimeout(
-                () => { return this.$emit('closeDisplay',this.usedForYearOrMonth)}
+                () => { 
+                    return this.$emit('close-display',this.usedForYearOrMonth)}
                 ,1000);
         },
         firstConfigActualOperator(){
@@ -182,7 +183,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss';
+    @import '../../style/_configs.scss';
     * {
         margin: 0 0;
         padding: 0 0;
@@ -230,7 +231,7 @@ export default {
                 justify-content: center;
                 button{
                     border:none;
-                    background: url("../img/finish-button.png") no-repeat center;
+                    background: url("../../img/finish-button.png") no-repeat center;
                     width:50px;
                     height:40px;
                     background-position:100% 5%;            
@@ -252,7 +253,7 @@ export default {
         height:40px;
         button{
             border:none;
-            background: url("../img/up-button.png") no-repeat center;
+            background: url("../../img/up-button.png") no-repeat center;
             width:42px;
             height:25px;
             background-position:100% 5%;            
@@ -272,7 +273,7 @@ export default {
         height:40px;
         button{
             border:none;
-            background: url("../img/down-button.png") no-repeat center;
+            background: url("../../img/down-button.png") no-repeat center;
             width:42px;
             height:25px;
             background-position:100% 5%;            

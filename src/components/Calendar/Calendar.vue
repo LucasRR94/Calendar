@@ -4,10 +4,10 @@
       <div class="calendar-header">
         <div class="calendar-header-input-area">
           <div class="mini-display" v-if="visualizeMonthDisplay">
-            <MiniDisplay  
+            <DisplayYearOrMonth  
             v-on:closeDisplay="closeDisplay" 
-            v-on:upActual="upActual"
-            v-on:downActual="downActual"
+            v-on:up-actual="upActual"
+            v-on:down-actual="downActual"
             v-bind:actualOperator="abreviation()"
             v-bind:usedForYearOrMonth="'month'"/>
           </div>
@@ -15,10 +15,10 @@
         </div>
         <div class="calendar-header-input-area">
           <div class="mini-display" v-if="visualizeYearDisplay">
-            <MiniDisplay  
+            <DisplayYearOrMonth  
             v-on:closeDisplay="closeDisplay" 
-            v-on:upActual="upActual"
-            v-on:downActual="downActual"
+            v-on:up-actual="upActual"
+            v-on:down-actual="downActual"
             v-bind:actualOperator="year"
             v-bind:usedForYearOrMonth="'year'"/>
           </div>
@@ -51,23 +51,21 @@
 
 <script>
 import Vue from 'vue'
-import ListEvents from './ListEvents.vue';
 import Event from '@/components/Event';
 import { v4 as uuidv4 } from 'uuid';
-import {store} from '../store';
-import MiniDisplay from '@/components/MiniDisplay.vue';
+import {store} from '../../store';
+import DisplayYearOrMonth from './DisplayYearOrMonth.vue';
 import { mapGetters } from 'vuex';
 
 export default{
   name:'Calendar',
   components:{
-    MiniDisplay
+    DisplayYearOrMonth
   },
   data(){
     return{
       visualizeMonthDisplay:false,
       visualizeYearDisplay:false,
-      requestMiniDisplay:false,
       usedForYearOrMonth:'',
       days:7,
       year:'',
@@ -101,12 +99,10 @@ export default{
       offsetDaysOfMonth:0,
       darkMode:false,
       lightMode:true,
-      objEvent:[],
-      idOfListEvents:'',
       listOfEvents:{
         2020:{
           8:{
-            14:{
+            25:{
               "fe8cb88f-5846-40bf-8ef2-749b1e12f37d":{
                 day: "04",
                 description: "TEST TEST TEST",
@@ -128,7 +124,7 @@ export default{
     }
   },
   computed:{
-    ...mapGetters(['getnewEventObj']),
+    ...mapGetters(['getnewEventObj','getmodifyDateHour']),
     getNewEvent(){
       return this.getnewEventObj;
     },
@@ -185,17 +181,17 @@ export default{
     },
     closeDisplay(param){
       this.genCalendarAndLoadEvents();
-      this.showMiniDisplay(param);
+      this.showDisplayYearOrMonth(param);
     },
     showDisplayYear(){
       this.used = "year";
-      return this.showMiniDisplay('year');  
+      return this.showDisplayYearOrMonth('year');  
     },
     showDisplayMonth(){
       this.used = "month";
-      return this.showMiniDisplay('month');  
+      return this.showDisplayYearOrMonth('month');  
     },
-    showMiniDisplay(actualDisplay){
+    showDisplayYearOrMonth(actualDisplay){
       if(actualDisplay === 'year'){
         this.visualizeYearDisplay = !this.visualizeYearDisplay;
       }
@@ -261,14 +257,14 @@ export default{
         }
       }
     },
-    changeEventForOtherList(oldLocation,newLocation){
-      const oldLocal = oldLocation.split(":"); 
-      const oldKey = oldLocal[0];
-      const idEvent = oldLocal[1];
-      const event = this.getEventFromListEvents(oldKey,idEvent);
-      this.setNewEventInlistOfEvents(newLocation.split("-"),event,idEvent);
-      this.setEventsForListEvents();
-    },
+    // changeEventForOtherList(oldLocation,newLocation){
+    //   const oldLocal = oldLocation.split(":"); 
+    //   const oldKey = oldLocal[0];
+    //   const idEvent = oldLocal[1];
+    //   const event = this.getEventFromListEvents(oldKey,idEvent);
+    //   this.setNewEventInlistOfEvents(newLocation.split("-"),event,idEvent);
+    //   this.setEventsForListEvents();
+    // },
     getEventFromListEvents(localitization,idEvent){
       /*this method , get an element,and eliminate from list Events*/
       const dateStr = localitization.split("-");
@@ -429,23 +425,27 @@ export default{
       // Uses the offset of first day of month and the lenght of month,and aproximate to number of days of weeks
       return (Math.ceil((this.daysOfWeekList.indexOf(this.firstDayOfmonth) + this.maxLenghtMonth)/7))*7;
     },
-    validationMonth(month){
-      if(Number(month) < 13 && Number(month) > 0){
-        return true;
-      }
-      return false;
-    },
-    validationYear(year){
-      if(Number(year)>=0){
-        return true;
-      }
-      return false;
-    },
+    // validationMonth(month){
+    //   if(Number(month) < 13 && Number(month) > 0){
+    //     return true;
+    //   }
+    //   return false;
+    // },
+    // validationYear(year){
+    //   if(Number(year)>=0){
+    //     return true;
+    //   }
+    //   return false;
+    // },
     setInitualValueYearMonthDay(){
       const obj = new Date;
       this.month = (Number(obj.getUTCMonth())+1);
       this.year = obj.getUTCFullYear();
       this.evidenceDayPosition = Number(obj.getDate());
+      store.commit('setActualDate',{
+      day:obj.getDate(),
+      month: this.monthsExplicit[(Number(obj.getUTCMonth())+1)],
+      year:obj.getUTCFullYear()});
     },
     genCalendar(){
       const lastMonth = () => {
@@ -456,14 +456,14 @@ export default{
       this.maxLenghtOfLastMonth = this.getLenthOfMonthInDays(lastMonth());
       this.offsetDaysOfMonth = this.daysOfWeekList.indexOf(this.firstDayOfmonth);
     },
-    indexBiggerThenSizeOfMonth(index){
-      if(index <= this.maxLenghtMonth){
-        return false;
-      }
-      else{
-        return true;
-      }
-    },
+    // indexBiggerThenSizeOfMonth(index){
+    //   if(index <= this.maxLenghtMonth){
+    //     return false;
+    //   }
+    //   else{
+    //     return true;
+    //   }
+    // },
     getFirstDayOfMonth(){
       const actualDay = new Date;
       const newDay = new Date(`${this.year}/${this.month}/01`); // get the first Day of actual Month
@@ -496,7 +496,7 @@ export default{
 </script>
 
 <style lang='scss'>
-  @import '../style/modulos.scss','../style/Calendar_Style.scss';
+  @import '../../style/modulos.scss','../../style/Calendar_Style.scss';
   *{
     margin:0 0;
     padding: 0 0;

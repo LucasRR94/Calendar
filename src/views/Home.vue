@@ -33,14 +33,15 @@
 
 <script>
 import {store} from '../store';
-import AddNewEvent from '@/components/AddNewEvent.vue';
-import Calendar from '@/components/Calendar.vue';
-import Header from '@/components/Header.vue';
-import EventDisplay from '@/components/EventDisplay.vue';
+import AddNewEvent from '@/components/AddNewEvent/AddNewEvent.vue';
+import Calendar from '@/components/Calendar/Calendar.vue';
+import Header from '@/components/Header/Header.vue';
+import EventDisplay from '@/components/EventDisplay/EventDisplay.vue';
 
 export default {
   name: 'Home',
   components:{Calendar,Header,EventDisplay,AddNewEvent},
+  
   data(){
     return{
       listActive:true

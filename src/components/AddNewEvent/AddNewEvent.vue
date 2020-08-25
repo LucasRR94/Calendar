@@ -26,7 +26,7 @@
               <button @click="activeYear()">{{finalChooseOptionTime.year}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="yearChooseActive">
-              <MiniDisplayAddNewEvent 
+              <AddNewEventInput 
               v-bind:setInput="getSetYear()"
               v-bind:usedFor="'year'"
               v-bind:firstOptionSet="getFirstOptionYear()"
@@ -43,7 +43,7 @@
               <button @click="activeMonth()">{{monthDisplay}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="monthChooseActive">
-              <MiniDisplayAddNewEvent 
+              <AddNewEventInput 
               v-bind:setInput="getSetMonth()"
               v-bind:usedFor="'month'"
               v-bind:firstOptionSet="getFirstOptionMonth()"
@@ -59,11 +59,11 @@
               <button @click="activeDay()">{{finalChooseOptionTime.day}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="dayChooseActive">
-              <MiniDisplayAddNewEvent 
+              <AddNewEventInput 
               v-bind:setInput="getSetDay()"
               v-bind:usedFor="'day'"
               v-bind:firstOptionSet="getFirstOptionDay()"
-              v-on:finishChoose="setfinalChooseOptionTimes($event)"
+              v-on:finish-choose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -75,11 +75,11 @@
               <button @click="activeHour()">{{finalChooseOptionTime.hour}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="hourChooseActive">
-              <MiniDisplayAddNewEvent 
+              <AddNewEventInput 
               v-bind:setInput="getSetHour()"
               v-bind:usedFor="'hour'"
               v-bind:firstOptionSet="0"
-              v-on:finishChoose="setfinalChooseOptionTimes($event)"
+              v-on:finish-choose="setfinalChooseOptionTimes($event)"
               />
             </div>
           </div>
@@ -91,7 +91,7 @@
               <button @click="activeMinute()">{{finalChooseOptionTime.minute}}</button>
             </div>
             <div class="add-new-event-wrapper-container-container-date-container-miniDisplay" v-if="minuteChooseActive">
-              <MiniDisplayAddNewEvent 
+              <AddNewEventInput 
               v-bind:setInput="getSetMinute()"
               v-bind:usedFor="'minute'"
               v-bind:firstOptionSet="0"
@@ -111,12 +111,12 @@
 </template>
 
 <script>
-import MiniDisplayAddNewEvent from '@/components/MiniDisplayAddNewEvent.vue';
-import {store} from '../store';
+import AddNewEventInput from './AddNewEventInput.vue';
+import {store} from '../../store';
 
 export default {
   name:'AddNewEvent',
-  components:{MiniDisplayAddNewEvent},
+  components:{AddNewEventInput},
   data(){
     return{
       yearChooseActive:false,
@@ -310,7 +310,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss' ,'../style/_modulos.scss';
+    @import '../../style/_configs.scss' ,'../../style/_modulos.scss';
     *{
         padding: 0 0;
         margin: 0 0;
@@ -332,7 +332,7 @@ export default {
           height:auto;
           min-height:70px;
         }
-        &-container:nth-child(2){
+        &-container:nth-child(2),&-container:nth-child(3){
           width:90%;
         }
         &-container{
@@ -369,7 +369,6 @@ export default {
                   max-height:24px;
                   font-size:22px;
                   color:white;
-                  
                 }
               }
               &-button{
@@ -486,8 +485,8 @@ export default {
     textarea{
       align-self: center;
       justify-self: center;
-      width:98%;
-      max-width:98%;
+      width:100%;
+      max-width:100%;
       max-height:200px;
       padding:.4rem;
       font-size:24px;

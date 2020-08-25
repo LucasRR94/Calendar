@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {store} from '../store';
+import {store} from '../../store';
 
 export default {
     name:'MiniCard',
@@ -33,7 +33,7 @@ export default {
 </script>
 
 <style lang='scss'>
-    @import '../style/_configs.scss';
+    @import '../../style/_configs.scss';
     *{
         box-sizing:border-box;
         margin:0 0;
@@ -47,13 +47,12 @@ export default {
             width:155px;
             height: 60%;
             border-radius: 0 .6rem 0 .6rem;
-            padding:.2rem;
+            padding:.4rem;
             background: $main-color-miniCalendar;
             color:$text-color-miniCard;
             display:flex;
             flex-direction: column;
             &-title{
-                padding:.2rem;
                 flex:.4;
                 max-height:24px;
                 font-size: 23px;
@@ -66,10 +65,9 @@ export default {
                     flex:1;
                     display: flex;
                     flex-direction: column;
-                    font-size: 2.8rem;
+                    font-size: 2.5rem;
                     justify-content: flex-end;
-                    align-items: center;   
-                    
+                    align-items: flex-start;               
                 }
 
             }    

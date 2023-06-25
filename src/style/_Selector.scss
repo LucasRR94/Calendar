@@ -1,0 +1,72 @@
+@import 'configs.scss','colors.scss';
+* {
+    margin: 0 0;
+    padding: 0 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+.overlay{
+    width:100vw;
+    height: 100vh;
+    top:0;
+    left:0;
+    position:fixed;
+    opacity: 100%;
+}   
+
+.wrapper{
+    position:relative;
+    opacity:100%;
+    background-color:rgb(133, 132, 132);
+    width: 100%;
+    height:100%;
+    .selector{
+        $sizeofSelector:100px;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        justify-items: center;
+        width:$sizeofSelector;
+        border:1px solid black;
+        height:auto;
+        background-color: white;
+        gap:20px;
+        position:absolute;
+        z-index: 3;
+        left:calc(50% - ($sizeofSelector/2));
+        @media (min-width:'0px') and (max-width:'768px') {
+            top:10%;
+        }
+        @media (min-width:'769px'){
+            top:30%;
+        }
+        border-radius: 20px;
+        padding:8px;
+        &__btn{
+            width: 30px;    
+            height: 30px;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border:none;
+            background-color:white;
+            img{
+                width: inherit;
+                height:inherit    
+            }
+            &:active {
+                border-radius: 0.4rem;
+                border: 2px solid rgba($selector-activation-border-btn, 0.1);
+            }
+        }
+        &__value{
+            font-size:18px;
+            font-family: "Roboto", sans-serif;
+            color:$selector-font-color;
+            width:inherit;
+            text-align:center;
+        }
+    }
+}

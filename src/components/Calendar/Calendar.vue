@@ -1,10 +1,21 @@
 <template>
   <section class="calendar">
     <div class="calendar__data-picker">
-      <DataPicker :month="month" :year="year"></DataPicker>
+      <DataPicker
+        :month="month"
+        :year="year"
+        @updateCalendarMonth="handleChangeMonth"
+        @updateCalendarYear="handleChangeYear"
+      >
+      </DataPicker>
     </div>
     <div class="calendar__structure-of-month">
-      <StructureOfMonth :month="month" :year="year"></StructureOfMonth>
+      <StructureOfMonth
+        :month="month"
+        :year="year"
+        @updateCalendarYearMonth="handleChangeInYearAndMonth"
+      >
+      </StructureOfMonth>
     </div>
   </section>
 </template>
@@ -25,6 +36,21 @@ export default Vue.extend({
     const actualDate = new Date();
     this.month = actualDate.getUTCMonth();
     this.year = actualDate.getUTCFullYear();
+  },
+  methods: {
+    handleChangeMonth: function (newMonth: number): void {
+      this.month = newMonth;
+    },
+    handleChangeYear: function (newYear: number): void {
+      this.year = newYear;
+    },
+    handleChangeInYearAndMonth: function (
+      newYear: number,
+      newMonth: number
+    ): void {
+      this.year = newYear;
+      this.month = newMonth;
+    },
   },
 });
 </script>

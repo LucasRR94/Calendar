@@ -1,0 +1,17 @@
+@import "../colors", "../configs.scss";
+.display-structure-of-month{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height:100%;
+}
+.list-days {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  }
+.day {
+  flex-basis: calc(100% / 7);
+}

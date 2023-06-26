@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MonthYearVue renders correctly when month 1`] = `
+<div class="month-year border-default"><button type="button" class="month-year__show-data">
+    DEC
+  </button>
+  <!---->
+</div>
+`;
+
+exports[`MonthYearVue renders correctly when month and isPopoverVisible 1`] = `
+<div class="month-year">
+  <!----> <span> my component </span>
+</div>
+`;
+
+exports[`MonthYearVue renders correctly when year 1`] = `
+<div class="month-year border-default"><button type="button" class="month-year__show-data">
+    2023
+  </button>
+  <!---->
+</div>
+`;
+
+exports[`MonthYearVue renders correctly when year and isPopoverVisible 1`] = `
+<div class="month-year">
+  <!----> <span> my component </span>
+</div>
+`;

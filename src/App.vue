@@ -15,13 +15,20 @@ body {
   margin: 0 0;
   padding: 0 0;
   box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
-body {
+body,
+html {
   width: 100vw;
   height: 100vh;
 }
 .app {
   width: 100%;
-  height: 100%;
+  @media (max-width: 767px) {
+    height: auto;
+  }
+  @media (min-width: 768px) {
+    height: auto;
+  }
 }
 </style>

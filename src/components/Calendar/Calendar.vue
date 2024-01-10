@@ -1,21 +1,24 @@
 <template>
   <section class="calendar">
-    <div class="calendar__data-picker">
-      <DataPicker
-        :month="month"
-        :year="year"
-        @updateCalendarMonth="handleChangeMonth"
-        @updateCalendarYear="handleChangeYear"
-      >
-      </DataPicker>
-    </div>
-    <div class="calendar__structure-of-month">
-      <StructureOfMonth
-        :month="month"
-        :year="year"
-        @updateCalendarYearMonth="handleChangeInYearAndMonth"
-      >
-      </StructureOfMonth>
+    <StructureOfYear v-if="isMonthView"></StructureOfYear>
+    <div class="calendar__month" v-else>
+      <div class="calendar__month__data-picker">
+        <DataPicker
+          :month="month"
+          :year="year"
+          @updateCalendarMonth="handleChangeMonth"
+          @updateCalendarYear="handleChangeYear"
+        >
+        </DataPicker>
+      </div>
+      <div class="calendar__month__structure-of-month">
+        <StructureOfMonth
+          :month="month"
+          :year="year"
+          @updateCalendarYearMonth="handleChangeInYearAndMonth"
+        >
+        </StructureOfMonth>
+      </div>
     </div>
   </section>
 </template>
@@ -23,13 +26,21 @@
 <script lang="ts">
 import Vue from "vue";
 import StructureOfMonth from "../ui/StructureOfMonth/StructureOfMonth.vue";
+import StructureOfYear from "../ui/StructureOfYear/StructureOfYear.vue";
 import DataPicker from "../ui/DataPicker/DataPicker.vue";
+import ToggleViewCalendar from "../ui/ToggleViewCalendar/ToggleViewCalendar.vue";
 export default Vue.extend({
-  components: { StructureOfMonth, DataPicker },
+  components: {
+    StructureOfMonth,
+    DataPicker,
+    StructureOfYear,
+    ToggleViewCalendar,
+  },
   data() {
     return {
       month: 0,
       year: 0,
+      isMonthView: false,
     };
   },
   created() {
@@ -51,16 +62,13 @@ export default Vue.extend({
       this.year = newYear;
       this.month = newMonth;
     },
+    changeToogleView: function () {
+      this.isMonthView = !this.isMonthView;
+    },
   },
 });
 </script>
 
 <style lang="scss">
 @import "../../../src/style/Calendar";
-* {
-  margin: 0 0;
-  padding: 0 0;
-  box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
-}
 </style>

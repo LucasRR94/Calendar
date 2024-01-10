@@ -21,3 +21,5 @@ export const HANDLE_INPUT_TEXT = "handleInputText";
 export const UPDATE_CALENDAR_YEAR_MONTH = "updateCalendarYearMonth";
 
 export const DAY_SELECTED = "daySelected";
+
+export const CHANGE_TOGGLE_VIEW = "changeToggleView";

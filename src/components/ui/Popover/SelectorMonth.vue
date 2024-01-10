@@ -37,7 +37,6 @@ export default Vue.extend({
   },
   methods: {
     emitEventUpdate: function (newMonth: number): void {
-      console.log("asdoasjdoaj");
       if (!this.$parent) return;
       this.$parent.$emit(UPDATE_DATE_SELECTOR_EVENT, -1, newMonth);
     },

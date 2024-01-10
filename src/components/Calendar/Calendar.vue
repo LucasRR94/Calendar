@@ -1,5 +1,9 @@
 <template>
   <section class="calendar">
+    <ToggleViewCalendar
+      :isMonthView="isMonthView"
+      @changeToggleView="changeToogleView"
+    />
     <StructureOfYear v-if="isMonthView"></StructureOfYear>
     <div class="calendar__month" v-else>
       <div class="calendar__month__data-picker">

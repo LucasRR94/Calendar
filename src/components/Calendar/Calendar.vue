@@ -1,507 +1,78 @@
 <template>
-  <main>
-    <div class="calendar">
-      <div class="calendar-header">
-        <div class="calendar-header-input-area">
-          <div class="mini-display" v-if="visualizeMonthDisplay">
-            <DisplayYearOrMonth  
-            v-on:closeDisplay="closeDisplay" 
-            v-on:up-actual="upActual"
-            v-on:down-actual="downActual"
-            v-bind:actualOperator="abreviation()"
-            v-bind:usedForYearOrMonth="'month'"/>
-          </div>
-          <span @click="showDisplayMonth()">{{abreviation()}}</span>    
-        </div>
-        <div class="calendar-header-input-area">
-          <div class="mini-display" v-if="visualizeYearDisplay">
-            <DisplayYearOrMonth  
-            v-on:closeDisplay="closeDisplay" 
-            v-on:up-actual="upActual"
-            v-on:down-actual="downActual"
-            v-bind:actualOperator="year"
-            v-bind:usedForYearOrMonth="'year'"/>
-          </div>
-          <span @click="showDisplayYear()">{{year}}</span>
-        </div>
+  <section class="calendar">
+    <ToggleViewCalendar
+      :isMonthView="isMonthView"
+      @changeToggleView="changeToogleView"
+    />
+    <StructureOfYear v-if="isMonthView"></StructureOfYear>
+    <div class="calendar__month" v-else>
+      <div class="calendar__month__data-picker">
+        <DataPicker
+          :month="month"
+          :year="year"
+          @updateCalendarMonth="handleChangeMonth"
+          @updateCalendarYear="handleChangeYear"
+        >
+        </DataPicker>
       </div>
-      <div class="calendar-body">
-        <ul class="calendar-body-wrapper-headers">
-          <li class="calendar-body-wrapper-headers-days" 
-          v-for="(index,i) in daysOfWeekList" :key="i">
-            <span>{{daysOfWeekList[i]}}</span>
-          </li>
-        </ul>
-        <ul class="calendar-body-wrapper-weeks">
-          <li class="calendar-body-wrapper-weeks-days" 
-          v-for="(j,index1) in getTheSizeOfListOfDays()" :key="index1"> 
-            <div class="calendar-body-wrapper-weeks-days-day" 
-            v-bind:class="{'other-month-grey':!actualMonth(index1)}">
-              <div class="calendar-body-wrapper-weeks-days-day-container" 
-              v-bind:class="{'evidence-day':evidenceday(index1)}" @click="inEvidence(index1)">
-                <span>{{getActualDay(index1)}}</span>
-              </div>
-            </div>
-          </li>
-        </ul>
+      <div class="calendar__month__structure-of-month">
+        <StructureOfMonth
+          :month="month"
+          :year="year"
+          @updateCalendarYearMonth="handleChangeInYearAndMonth"
+        >
+        </StructureOfMonth>
       </div>
     </div>
-  </main>
+  </section>
 </template>
 
-<script>
-import Vue from 'vue'
-import Event from '@/components/Event';
-import { v4 as uuidv4 } from 'uuid';
-import {store} from '../../store';
-import DisplayYearOrMonth from './DisplayYearOrMonth.vue';
-import { mapGetters } from 'vuex';
-
-export default{
-  name:'Calendar',
-  components:{
-    DisplayYearOrMonth
+<script lang="ts">
+import Vue from "vue";
+import StructureOfMonth from "../ui/StructureOfMonth/StructureOfMonth.vue";
+import StructureOfYear from "../ui/StructureOfYear/StructureOfYear.vue";
+import DataPicker from "../ui/DataPicker/DataPicker.vue";
+import ToggleViewCalendar from "../ui/ToggleViewCalendar/ToggleViewCalendar.vue";
+export default Vue.extend({
+  components: {
+    StructureOfMonth,
+    DataPicker,
+    StructureOfYear,
+    ToggleViewCalendar,
   },
-  data(){
-    return{
-      visualizeMonthDisplay:false,
-      visualizeYearDisplay:false,
-      usedForYearOrMonth:'',
-      days:7,
-      year:'',
-      month:'',
-      maxLenghtMonth:0,
-      maxLenghtOfLastMonth:0,
-      monthsExplicit:{
-        1:"JANUARY",
-        2:"FEBRUARY",
-        3:"MARCH",
-        4:"APRIL",
-        5:"MAY",
-        6:"JUNE",
-        7:"JULY",
-        8:"AUGUST",
-        9:"SEPTEMBER",
-        10:"OCTOBER",
-        11:"NOVEMBER",
-        12:"DECEMBER"
-      },
-      daysOfWeekList:[
-        'Sun',
-        'Mon',
-        'Tue',
-        'Wed',
-        'Thu',
-        'Fri',
-        'Sat'
-      ],
-      firstDayOfmonth:'Sun',
-      offsetDaysOfMonth:0,
-      darkMode:false,
-      lightMode:true,
-      listOfEvents:{
-        2020:{
-          8:{
-            25:{
-              "fe8cb88f-5846-40bf-8ef2-749b1e12f37d":{
-                day: "04",
-                description: "TEST TEST TEST",
-                hour: "5",
-                id: "fe8cb88f-5846-40bf-8ef2-749b1e12f37d",
-                minute: "05",
-                month: "04",
-                scheduleDay: "2020-08-04",
-                title: "Something",
-                year: "2020"
-              }
-            }
-          }
-        }
-
-      },
-      arrayOfEventsForListEvents:[],
-      evidenceDayPosition:-1,    
-    }
+  data() {
+    return {
+      month: 0,
+      year: 0,
+      isMonthView: false,
+    };
   },
-  computed:{
-    ...mapGetters(['getnewEventObj','getmodifyDateHour']),
-    getNewEvent(){
-      return this.getnewEventObj;
-    },
-    signal(){
-      return store.getters.getIdOfDragged;
-    },
-    setActualEvent(){
-      if(this.evidenceDayPosition !== -1){
-        return this.arrayOfEventsForListEvents[this.evidenceDayPosition];
-      }
-    }
-  },
-  watch:{
-    setActualEvent(){
-      return store.commit('setListOfEventsEvidenceDay',this.setActualEvent);
-    },
-    getNewEvent(){
-      const objNewEvent = this.getNewEvent;
-      const dateString = `${objNewEvent['time']['year']}-${objNewEvent['time']['month']}-${objNewEvent['time']['day']}`;
-      this.newEvent(objNewEvent['description'],objNewEvent['title'],dateString,objNewEvent['time']);
-      return;
-    },
-    arrayOfEventsForListEvents(){
-      store.commit('setlistOfListOfEvents',this.arrayOfEventsForListEvents);
-    },
-    year(){
-      if(this.year <= 1969 ){
-        this.year = 1970;
-      }
-    },
-    month(){
-      if(this.month <= 0){
-        this.month = 12;
-      }
-      if(this.month>12){
-        this.month = 1;
-      }
-    }
+  created() {
+    const actualDate = new Date();
+    this.month = actualDate.getUTCMonth();
+    this.year = actualDate.getUTCFullYear();
   },
   methods: {
-    upActual(param){
-      if((param) == 'month'){
-        this.month++;
-      }else{
-        this.year++;
-      }
+    handleChangeMonth: function (newMonth: number): void {
+      this.month = newMonth;
     },
-    downActual(param){
-      if((param) == 'month'){
-        this.month--;
-      }else{
-        this.year--;
-      }
+    handleChangeYear: function (newYear: number): void {
+      this.year = newYear;
     },
-    closeDisplay(param){
-      this.genCalendarAndLoadEvents();
-      this.showDisplayYearOrMonth(param);
+    handleChangeInYearAndMonth: function (
+      newYear: number,
+      newMonth: number
+    ): void {
+      this.year = newYear;
+      this.month = newMonth;
     },
-    showDisplayYear(){
-      this.used = "year";
-      return this.showDisplayYearOrMonth('year');  
+    changeToogleView: function () {
+      this.isMonthView = !this.isMonthView;
     },
-    showDisplayMonth(){
-      this.used = "month";
-      return this.showDisplayYearOrMonth('month');  
-    },
-    showDisplayYearOrMonth(actualDisplay){
-      if(actualDisplay === 'year'){
-        this.visualizeYearDisplay = !this.visualizeYearDisplay;
-      }
-      if(actualDisplay === 'month'){
-        this.visualizeMonthDisplay = !this.visualizeMonthDisplay;
-      }
-      else{
-        return ;
-      }
-    },
-    inEvidence(index){
-      const actual = index + 1;
-      const ItsActualMonth = this.actualMonth(index);
-      if((ItsActualMonth)){ // Is valid day
-        this.evidenceDayPosition = (actual - this.offsetDaysOfMonth); 
-      } 
-    },
-    evidenceday(position){
-      if(this.actualMonth(position)){ // it's a valid month
-        if(this.evidenceDayPosition == (position + 1 - this.offsetDaysOfMonth)){
-          return true;
-        }
-        else{
-          return false;
-        }
-      }else{
-        return false;
-      }
-    },
-    abreviation(){
-      let finalReturn = "";
-      try{
-        const abreviationExplicitMonth = this.monthsExplicit[this.month].substring(0,3);
-        finalReturn = abreviationExplicitMonth;
-      }
-      catch(err){
-        finalReturn = "";
-      }
-      finally{
-        return finalReturn;
-      }
-    },
-    actualMonth(index){
-      const actual = index + 1;
-      if((index < this.offsetDaysOfMonth) || !(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth))){
-        return false;
-      }
-      else{
-        return true;
-      }  
-    },
-    getActualDay(index){
-      const actual = index + 1;
-      if(index < this.offsetDaysOfMonth){
-        return (this.maxLenghtOfLastMonth -  (this.offsetDaysOfMonth - (index + 1)));
-      }
-      else{
-        if(actual <= (this.maxLenghtMonth + this.offsetDaysOfMonth)){
-          return (actual - this.offsetDaysOfMonth);
-        }
-        else{
-          return (actual - this.offsetDaysOfMonth) - this.maxLenghtMonth;
-        }
-      }
-    },
-    // changeEventForOtherList(oldLocation,newLocation){
-    //   const oldLocal = oldLocation.split(":"); 
-    //   const oldKey = oldLocal[0];
-    //   const idEvent = oldLocal[1];
-    //   const event = this.getEventFromListEvents(oldKey,idEvent);
-    //   this.setNewEventInlistOfEvents(newLocation.split("-"),event,idEvent);
-    //   this.setEventsForListEvents();
-    // },
-    getEventFromListEvents(localitization,idEvent){
-      /*this method , get an element,and eliminate from list Events*/
-      const dateStr = localitization.split("-");
-      const data = this.listOfEvents[dateStr[0]][dateStr[1]][dateStr[2]][idEvent];  
-      delete(this.listOfEvents[dateStr[0]][dateStr[1]][dateStr[2]][idEvent]); // del the key
-      return data;
-    },
-    genCalendarAndLoadEvents(){
-      this.genCalendar();
-      this.setEventsForListEvents();
-    },
-    setEventsForListEvents(){
-      this.arrayOfEventsForListEvents = [];
-      const sizeInDays = this.maxLenghtMonth;
-      const eventsRegistred = this.findEventsOfMonth();
-      let sizeOfRegistredEvents = 0;
-      try{
-        sizeOfRegistredEvents = Object.keys(eventsRegistred).length;
-      }
-      catch(err){
-        sizeOfRegistredEvents = 0;
-      }
-      finally{
-        if(sizeOfRegistredEvents == 0){
-          for(let i = 0;i < sizeInDays;i++){
-            this.arrayOfEventsForListEvents.push([]);
-          }
-        }else{
-          for(let i = 0;i < sizeInDays;i++){
-            let possibleEvent;
-            try{
-              possibleEvent = eventsRegistred[i];
-              this.arrayOfEventsForListEvents.push(possibleEvent);   
-            }
-            catch(err){
-              this.arrayOfEventsForListEvents.push([]);   
-            }
-          }
-        
-        }
-      }
-    },
-    findEventsOfMonth(){
-      /*Search in list events for specific year, month
-      to load in component listEvents*/
-      let result = {};
-      try{
-        const month = this.listOfEvents[this.year][this.month];
-        return month;
-      }
-      catch(err){
-        return {};
-      }
-    },
-    $_createEvent(description,title,dateSchedule,fullDescriptionSchedule){
-      const idGenerated = uuidv4();
-      return{
-        "id":idGenerated,
-        "title":title,
-        "description":description,
-        "scheduleDay":dateSchedule,
-        "year":fullDescriptionSchedule["year"],
-        "month":fullDescriptionSchedule["month"],
-        "day":fullDescriptionSchedule["day"],
-        "hour":fullDescriptionSchedule["hour"],
-        "minute":fullDescriptionSchedule["minute"]
-        };
-    },
-    $_validateFields(title,description){
-      if(title !== '' && description !== ''){
-        return true;
-      }
-      else{
-        return false;
-      }
-    },
-    $_validationDate(dateSchedule){
-      if(dateSchedule!==''){
-        const actualDate = new Date();
-        const newDeadLineDate = new Date(dateSchedule);
-        if((newDeadLineDate.getUTCMonth()) === (actualDate.getUTCMonth()) &&
-      (newDeadLineDate.getUTCFullYear()) === (actualDate.getUTCFullYear())){
-          return true;
-        }else{
-          return false; // required change month
-        }
-      }
-      else{
-        return false;
-      }
-    },
-    createObjKeyIfNotExist(mainObj,option){
-      let cond = true;
-      let i = 0;
-      let copyObj = mainObj;
-      while(cond){
-          if(i == 3){
-              cond = false;
-          }
-          else{
-              let objTest;
-              objTest = copyObj[option[i]];
-              if(typeof(objTest) == 'undefined'){
-                  let backup = {};
-                  copyObj[option[i]] = backup;
-                  copyObj = backup;
-              }
-              if(typeof(objTest) == 'object'){
-                  let backup = {};
-                  backup = copyObj[option[i]];
-                  copyObj = backup;
-              }
-          }
-          i++;
-      }
-      return copyObj;
-    },
-    setNewEventInlistOfEvents(dateStr,event,idEvent){
-      const option = [String(Number(dateStr[0])),String(Number(dateStr[1])),String(Number(dateStr[2]))];
-      const day = this.createObjKeyIfNotExist(this.listOfEvents,option);
-      day[idEvent] = event; // added event in the object listEvents
-    },
-    newEvent(description,title,dateSchedule,fullDescriptionSchedule){
-      if(!this.$_validateFields(description,title)){ return ; } // contain the fields empty
-      if(!this.$_validationDate(dateSchedule)){ // change the calendar to the month and year of the event that is beeing added.
-        const dateStr = dateSchedule.split("-");
-        this.year = Number(dateStr[0]);
-        this.month = Number(dateStr[1]);
-        this.genCalendar(); // Change the calendar to other month
-      }
-      const arrEvent = this.$_createEvent(description,title,dateSchedule,fullDescriptionSchedule); // contains obj Event
-      const idEvent = arrEvent["id"];
-      const dateStr = dateSchedule.split("-");
-      this.setNewEventInlistOfEvents(dateStr,arrEvent,idEvent);
-      this.setEventsForListEvents();
-    },
-    getId(day,month,year){
-      return `${year}-${month}-${day}`;
-    },
-    changeMode(){
-      this.lightMode = this.darkMode;
-      this.darkMode = !this.lightMode;
-    },
-    isLeapYear(year){
-      if(year%400 ==0){
-        return true;
-      }
-      else{
-        if(year%4==0 && year%100!=0){
-          return true;
-        }
-        else{
-          return false;
-        }
-      }
-    },
-    getTheSizeOfListOfDays(){
-      // Uses the offset of first day of month and the lenght of month,and aproximate to number of days of weeks
-      return (Math.ceil((this.daysOfWeekList.indexOf(this.firstDayOfmonth) + this.maxLenghtMonth)/7))*7;
-    },
-    // validationMonth(month){
-    //   if(Number(month) < 13 && Number(month) > 0){
-    //     return true;
-    //   }
-    //   return false;
-    // },
-    // validationYear(year){
-    //   if(Number(year)>=0){
-    //     return true;
-    //   }
-    //   return false;
-    // },
-    setInitualValueYearMonthDay(){
-      const obj = new Date;
-      this.month = (Number(obj.getUTCMonth())+1);
-      this.year = obj.getUTCFullYear();
-      this.evidenceDayPosition = Number(obj.getDate());
-      store.commit('setActualDate',{
-      day:obj.getDate(),
-      month: this.monthsExplicit[(Number(obj.getUTCMonth())+1)],
-      year:obj.getUTCFullYear()});
-    },
-    genCalendar(){
-      const lastMonth = () => {
-        return (this.month - 1 == 0) ? 12 : this.month -1;
-      };
-      this.getFirstDayOfMonth();
-      this.maxLenghtMonth = this.getLenthOfMonthInDays(this.month);
-      this.maxLenghtOfLastMonth = this.getLenthOfMonthInDays(lastMonth());
-      this.offsetDaysOfMonth = this.daysOfWeekList.indexOf(this.firstDayOfmonth);
-    },
-    // indexBiggerThenSizeOfMonth(index){
-    //   if(index <= this.maxLenghtMonth){
-    //     return false;
-    //   }
-    //   else{
-    //     return true;
-    //   }
-    // },
-    getFirstDayOfMonth(){
-      const actualDay = new Date;
-      const newDay = new Date(`${this.year}/${this.month}/01`); // get the first Day of actual Month
-      this.firstDayOfmonth = this.daysOfWeekList[newDay.getDay()];
-    },
-    
-    getLenthOfMonthInDays(month){
-      const actualMonth = Number(month);
-      let maxSize = 0;
-      if(actualMonth >0 && actualMonth <=12){
-        if(actualMonth==2){
-          (this.isLeapYear(this.year) == true) ? maxSize = 29 : maxSize=28;
-        }
-        else{
-          (actualMonth==4)||(actualMonth==11)|| (actualMonth==9)||(actualMonth==6) ? maxSize=30 : maxSize = 31;
-        }
-        return maxSize;
-      }
-      else{
-        return 0;
-      }
-    }
   },
-  mounted(){
-    this.setInitualValueYearMonthDay();
-    this.genCalendar();
-    this.setEventsForListEvents();
-  }
-}
+});
 </script>
 
-<style lang='scss'>
-  @import '../../style/modulos.scss','../../style/Calendar_Style.scss';
-  *{
-    margin:0 0;
-    padding: 0 0;
-    box-sizing:border-box;
-    font-family: 'Roboto', sans-serif;
-  }
-
+<style lang="scss">
+@import "../../../src/style/Calendar";
 </style>

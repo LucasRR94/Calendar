@@ -1,0 +1,13 @@
+@import '../style/configs.scss', 'colors.scss';
+
+.data-picker{
+    width:100%;
+    height:auto;
+    min-height:100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: $data-picker-background-color;
+    gap:22%;
+}
